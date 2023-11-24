@@ -1,10 +1,14 @@
-from tools import read
+import tools.compile as compile
+import time
+
 
 
 def main():
-    reader = read.Read("./scripts/1.txt")
-    for i in reader.token.token:
-        print(i)
+    start = time.time()
+    compiler = compile.Compiler("./scripts/1.txt")
+    compiler.saveToken()
+    end = time.time()
+    print(end - start)
 
 
 if __name__ == "__main__":

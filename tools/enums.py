@@ -1,0 +1,10 @@
+ERROR = None
+
+ACCEPT = 1
+OK = 1
+IF = 2
+WHILE = 3
+SWITCH = 4
+NONE = 0
+
+END = 10
