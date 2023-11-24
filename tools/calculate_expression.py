@@ -38,12 +38,15 @@ def calculate_expression(tokens):
     return evaluate(tokens)
 
 
-def find_invalid_position(sequence):
+def find_invalid_ari(sequence):
     """
     检查表达式是否合理，合理则返回None，否则返回错误所在位置
     """
     operators = set(["+", "-", "*", "/"])
     last_element = None
+
+    if sequence is None:
+        return -1
 
     for idx, element in enumerate(sequence):
         if element.isdigit():  # 如果元素是数字
@@ -61,6 +64,71 @@ def find_invalid_position(sequence):
 
     # 如果最后一个元素是运算符，则表达式格式不正确，返回最后一个位置
     if last_element in operators:
+        return len(sequence) - 1
+
+    return None  # 如果表达式格式正确，则返回 None
+
+
+def calculate_logic_expression(expression):
+    operators = []  # 运算符堆栈
+    values = []  # 值堆栈
+    valid_values = {"true", "false"}
+    valid_operators = {"and", "or"}
+
+    def string_bool(item):
+        if item == "true":
+            return True
+        elif item == "false":
+            return False
+        else:
+            return item
+    if len(expression) == 1:
+        return string_bool(expression[0])
+
+    def apply_operator(operators, values):
+        operator = operators.pop()  # 弹出一个运算符
+        right = string_bool(values.pop())  # 弹出右操作数
+        left = string_bool(values.pop())  # 弹出左操作数
+        # 根据运算符执行相应的运算并将结果压入值堆栈
+        if operator == "and":
+            values.append(right and left)
+        elif operator == "or":
+            values.append(left or right)
+
+    for token in expression:
+        if token in valid_operators:
+            if len(operators) == 1:
+                apply_operator(operators, values)
+            operators.append(token)
+        elif token in valid_values:
+            values.append(token)
+    apply_operator(operators, values)
+
+    return values[0]
+
+
+def find_invalid_logic(sequence):
+    """
+    检查逻辑表达式是否合法，合法则返回 None，否则返回第一个不合法的位置
+    """
+    valid_values = {"true", "false"}
+    valid_operators = {"and", "or"}
+    has_operand = False
+    if sequence is None:
+        return -1
+
+    for idx, token in enumerate(sequence):
+        if token in valid_values:
+            has_operand = True
+        elif token in valid_operators:
+            if not has_operand:
+                return idx
+            has_operand = False
+        else:
+            return idx
+
+    # 检查最后一个元素是否为操作数
+    if not has_operand:
         return len(sequence) - 1
 
     return None  # 如果表达式格式正确，则返回 None

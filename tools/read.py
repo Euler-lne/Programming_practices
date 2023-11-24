@@ -16,7 +16,7 @@ class Read:
         self.is_conmment = False  # 标记现在是否处于注释状态
         self.is_string = False  # 标记现在是否处于字符串状态
         self.stack1 = []  # 用于进行引号匹配，是一个栈
-        self.stack2 = [] # 用于语句块划分
+        self.stack2 = []  # 用于语句块划分
         self.string = ""  # 用于保存字符串
         self.len_num = 1  # 用于记录当前有几行
         self.senten_state = enums.NONE  # 记录语句状态
@@ -32,7 +32,7 @@ class Read:
         len = self.token.getLen()
         while True:
             char = self.file.read(1)
-            if not char:  
+            if not char:
                 # 文末
                 self.checkID(False)
                 self.file.close()
@@ -92,16 +92,16 @@ class Read:
         elif char == "也":
             self.token.addToken("=_", char)
             self.checkID()
-        elif char == "加":
+        elif char == "加" or char == "+":
             self.token.addToken("+", char)
             self.checkID()
-        elif char == "减":
+        elif char == "减" or char == "-":
             self.token.addToken("-", char)
             self.checkID()
-        elif char == "乘":
+        elif char == "乘" or char == "*":
             self.token.addToken("*", char)
             self.checkID()
-        elif char == "除":
+        elif char == "除" or char == "/":
             self.token.addToken("/", char)
             self.checkID()
         elif char == "若":

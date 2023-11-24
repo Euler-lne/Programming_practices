@@ -1,6 +1,6 @@
 import tools.compile as compile
 import time
-
+from tools.calculate_expression import *
 
 
 def main():

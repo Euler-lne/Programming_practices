@@ -13,7 +13,7 @@ class Compiler(read.Read):
 
     def __init__(self, path, encodeing="utf-8"):
         super().__init__(path, encodeing)
-        self.id = {}  # 用于保存id 以及其对应的值
+        self.id = {}  # 用于保存id 以及其对应的值，字典键为变量名字，值为一个列表
         self.index_start = 0  # 当前的Token起始下标
         self.index_end = 0  # 当前Token的结束下标的后一位
         self.state = enums.NONE  # 当前的语句状态
@@ -71,8 +71,50 @@ class Compiler(read.Read):
             return enums.ERROR
         index, char = self.forwordIndex(index)
         while index < self.index_end:
-            pass
-        pass
+            while char and char not in [",", ".", "="]:
+                if char == "id":
+                    name = self.token.getValue(index)
+                    self.id[name] = []
+                    self.id[name].append(type)
+                    self.id[name].append(None)
+                else:
+                    string = "There was a problem defining the variable, the character "
+                    string += char + " was unknown. "
+                    string += "The error near the line " + str(self.len_num) + "."
+                    print(string)
+                    return enums.ERROR
+                index, char = self.forwordIndex(index)
+            if char == "=":
+                # 如果是等号那么就读取等号右边的值
+                index, char = self.forwordIndex(index)
+                if char:
+                    # 如果字符存在，移动开始指针，应为之后调用的函数需要从特定位置开始计算
+                    self.index_start = index
+                    if type == "float":
+                        val = self.ariExpression()  # 计算表达式的值
+                    elif type == "string":
+                        val = self.strExpression()
+                    else:
+                        val = self.logicExpression()
+                    if val is not None:
+                        # 表达式的值正确
+                        self.id[name][1] = val  # 保存表达式的值
+                        index = self.index_start  # 移动当前指针
+                        char = self.token.getType(index)
+                else:
+                    string = "An expression is required after =. "
+                    string += "The error near the line " + str(self.len_num) + "."
+                    print(string)
+                    return enums.ERROR
+            elif char == "," or char == ".":
+                index, char = self.forwordIndex(index)
+            else:
+                string = "Unexpected type of " + char
+                string += ". You should examine your code near "
+                string += str(self.len_num) + "."
+                print(string)
+                return enums.ERROR
+        return enums.OK
 
     def assignment1(self):
         """
@@ -82,27 +124,41 @@ class Compiler(read.Read):
         """
         index = self.index_start
 
-    def expression(self):
+        return enums.OK
+
+    def ariExpression(self, error=True):
         """
-        检查表达式，并计算表达式中的值
+        检查算数表达式，并计算表达式中的值
+        传入的值用来进行对某些打印类型是否输出的判断，应为布尔值的判断可能会用到
         返回算数表达式的值
         """
         index = self.index_start
         char = self.token.getType(index)
-        end_list = const.LOGIC.append(",", ".")
         tokens = []
-        while char and char not in end_list:
+        while char and char not in const.ARIEXP:
             if char == "id":
                 name = self.token.getValue(index)
+                if name not in self.id:
+                    string = name + " have not been statement. "
+                    string += "The error near the line " + str(self.len_num) + "."
+                    print(string)
+                    return enums.ERROR
                 type = self.id[name][0]
                 value = self.id[name][1]
+                if value is None:
+                    string = name + " is not initialized. "
+                    string += "The error near the line " + str(self.len_num) + "."
+                    print(string)
+                    return enums.ERROR
                 if type != "float":
                     # 类型错误
-                    string = "Unexpected type. You should use float as "
-                    string += "a type of expression. Not "
-                    string += type
-                    string += " . The error near the line " + str(self.len_num) + " ."
-                    print(string)
+                    # 类型错误的判断在逻辑表达式的判断不需要检测
+                    if error:
+                        string = "Unexpected type. You should use float as "
+                        string += "a type of expression. Not "
+                        string += type
+                        string += ". The error near the line " + str(self.len_num) + "."
+                        print(string)
                     return enums.ERROR
                 else:
                     tokens.append(value)
@@ -113,24 +169,97 @@ class Compiler(read.Read):
                 tokens.append(char)
             else:
                 # 出现了其他符号
-                string = "Unexpected type of " + char
-                string += " .You should examine your code near "
-                string += str(self.len_num) + " ."
-                print(string)
+                if error:
+                    string = "Unexpected type of " + char
+                    string += ". You should examine your code near "
+                    string += str(self.len_num) + "."
+                    print(string)
                 return enums.ERROR
             index, char = self.forwordIndex(index)
-        val = find_invalid_position(tokens)
+        val = find_invalid_ari(tokens)
         if val == None:
             # 如果翻译出的式子为一个表达式，调整开始指针，然后返回计算的值
             self.index_start = index
             return calculate_expression(tokens)
-        else:
+        elif val != -1:
             # 不是表达式
             string = "Unexpected type of " + tokens[val]
             string += " .You should examine your code near "
             string += str(self.len_num) + " ."
             print(string)
             return enums.ERROR
+
+    def strExpression(self):
+        """
+        检查字符串表达式，并计算表达式中的值
+        返回字符串表达式的值
+        """
+        index = self.index_start
+        char = self.token.getType(index)
+        tokens = []
+        while char and char not in const.STREXP:
+            index, char = self.forwordIndex(index)
+        self.index_start = index
+        return "1"
+
+    def logicExpression(self):
+        """
+        检查逻辑表达式，并计算表达式中的值
+        返回逻辑表达式的值
+        """
+        index = self.index_start
+        char = self.token.getType(index)
+        tokens = []
+        while char and char not in const.STREXP:
+            # 循环到遇到, 或者.
+            val = self.ariExpression(False)  # 尝试计算表达式的值，失败的情况也要考虑
+            if val:
+                # 如果成功了那么开始字符已经移动过了
+                if val == 0:
+                    tokens.append("false")
+                else:
+                    tokens.append("true")
+            else:
+                # 失败了开始字符没有移动过
+                name = self.token.getValue(index)
+                if char == "true" or char == "false":
+                    tokens.append(char)
+                elif char == "id":
+                    type = self.id[name][0]
+                    val = self.id[name][1]
+                    if type == "bool":
+                        tokens.append(val)
+                    else:
+                        string = "Unexpected type. You should use bool as "
+                        string += "a type of logic expression. Not "
+                        string += type
+                        string += ". The error near the line " + str(self.len_num) + "."
+                        print(string)
+                        return enums.ERROR
+            index, char = self.forwordIndex(index)  # 下移一个
+            if char and char in const.LOGIC:
+                tokens.append(char)
+            elif char and char not in const.ARIEXP:
+                string = "Unexpected " + char
+                string += ". The error near the line " + str(self.len_num) + "."
+                print(string)
+                return enums.ERROR
+        if len(tokens) == 0:
+            string = "Expected a logic expression"
+            string += ". The error near the line " + str(self.len_num) + "."
+            print(string)
+            return enums.ERROR
+        else:
+            val = find_invalid_logic(tokens)
+            if val is None:
+                self.index_start = index
+                return calculate_logic_expression(tokens)
+            else:
+                string = "Unexpected type of " + tokens[val]
+                string += " .You should examine your code near "
+                string += str(self.len_num) + " ."
+                print(string)
+                return enums.ERROR
 
     def forwordIndex(self, i):
         """
