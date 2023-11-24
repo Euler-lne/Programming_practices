@@ -136,7 +136,9 @@ class Compiler(read.Read):
         char = self.token.getType(index)
         tokens = []
         while char and char not in const.ARIEXP:
+            # 算术表达式读到const.ARIEXP结束
             if char == "id":
+                # 如果是id
                 name = self.token.getValue(index)
                 if name not in self.id:
                     string = name + " have not been statement. "
@@ -163,9 +165,11 @@ class Compiler(read.Read):
                 else:
                     tokens.append(value)
             elif char == "num":
+                # 如果是数字
                 value = self.token.getValue(index)
                 tokens.append(value)
             elif char in ["+", "-", "*", "/"]:
+                # 算数表达式
                 tokens.append(char)
             else:
                 # 出现了其他符号
@@ -236,15 +240,23 @@ class Compiler(read.Read):
                         string += ". The error near the line " + str(self.len_num) + "."
                         print(string)
                         return enums.ERROR
+            # 这一个代码之前用于处理布尔值
             index, char = self.forwordIndex(index)  # 下移一个
+            # 这个代码之后用于处理连接布尔值的关键字，and 和 or
             if char and char in const.LOGIC:
+                # 匹配成功
                 tokens.append(char)
+                index, char = self.forwordIndex(index)
             elif char and char not in const.ARIEXP:
+                # 匹配失败
+                # 表示算数表达式后面可用跟随的符号
+                # ARIEXP = ["==", "and", "or", "<", ">", "<=", ">=", "!=", ",", "."]
                 string = "Unexpected " + char
                 string += ". The error near the line " + str(self.len_num) + "."
                 print(string)
                 return enums.ERROR
         if len(tokens) == 0:
+            # 长度为0表示原本想要逻辑表达式子，但是没有输入
             string = "Expected a logic expression"
             string += ". The error near the line " + str(self.len_num) + "."
             print(string)
@@ -252,9 +264,11 @@ class Compiler(read.Read):
         else:
             val = find_invalid_logic(tokens)
             if val is None:
-                self.index_start = index
+                # 检测逻辑表达式是否合法
+                self.index_start = index  # 移动指针表示，已经读取完成
                 return calculate_logic_expression(tokens)
             else:
+                # 逻辑表达式不合法
                 string = "Unexpected type of " + tokens[val]
                 string += " .You should examine your code near "
                 string += str(self.len_num) + " ."
