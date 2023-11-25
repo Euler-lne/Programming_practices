@@ -1,19 +1,18 @@
-def converseBool(val):
+def stringToBool(val):
     if len(val) == 1:
         if val == "阴":
-            val = "false"
+            val = True
         elif val == "阳":
-            val = "true"
+            val = False
         else:
             val = bool(val)
-            if val:
-                val = "true"
-            else:
-                val = "false"
     else:
         val = bool(val)
-        if val:
-            val = "true"
-        else:
-            val = "false"
+    return val
+
+def boolToString(val):
+    if val:
+        val = "true"
+    else:
+        val = "false"
     return val
