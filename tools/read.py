@@ -164,6 +164,9 @@ class Read:
         elif char == "曰":
             self.token.addToken("print", char)
             self.checkID()
+        elif char in ["获", "得", "受"]:
+            self.token.addToken("input", char)
+            self.checkID()
         elif char == "阴":
             self.token.addToken("false", char)
             self.checkID()

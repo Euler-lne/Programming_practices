@@ -52,3 +52,13 @@ def errorExpect(char, len_num, is_print=True):
         string += str(len_num) + "."
         print(string)
     return enums.ERROR
+
+
+def warnUncheckBlock(len_num):
+    string = (
+        "Note that we detect that the script you wrote has an unhelpful statement, "
+    )
+    string += "and we will skip this code. \nIf there is an error in the skipped code, it will not affect the execution of the code. \n"
+    string += ". You should examine your code near "
+    string += str(len_num) + "."
+    print(string)

@@ -28,6 +28,9 @@
 非小 --> >= 
 非者 --> else 
 曰 --> print
+获 --> input
+得 --> input
+受 --> input
 阴 --> false
 阳 --> true
 ！ --> !

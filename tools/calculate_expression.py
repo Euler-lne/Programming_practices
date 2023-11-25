@@ -1,4 +1,7 @@
 def calculate_expression(tokens):
+    """
+    计算一个表达式的值，数字可以是字符串或者是数字
+    """
     precedence = {"+": 1, "-": 1, "*": 2, "/": 2}
     if (
         len(tokens) == 2 and tokens[0] in ["+", "-"] and tokens[1] not in ["+", "-"]
@@ -40,10 +43,13 @@ def calculate_expression(tokens):
                     apply_operator(operators, values)  # 执行运算
                 operators.append(token)  # 将运算符压入运算符堆栈
             else:  # 如果是数字或小数点则作为操作数压入值堆栈
-                if "." in token:
-                    values.append(float(token))
+                if isinstance(token, int) or isinstance(token, float):
+                    values.append(token)
                 else:
-                    values.append(int(token))
+                    if "." in token:
+                        values.append(float(token))
+                    else:
+                        values.append(int(token))
         while operators:  # 执行剩余的运算
             apply_operator(operators, values)
         return values[0]  # 返回最终结果

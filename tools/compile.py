@@ -9,7 +9,7 @@ class Compiler(read.Read):
     """
     用于词法分析，解析目标代码
     主要有4个状态：普通语句，IF语句，WHILE语句，SWITCH语句，这四个状态通过readBlock返回得知
-    其中普通语句又有：赋值语句，声明语句，逻辑语句
+    其中普通语句又有：赋值语句，声明语句，print语句，
     """
 
     def __init__(self, path, encodeing="utf-8"):
@@ -51,7 +51,26 @@ class Compiler(read.Read):
         index = self.index_start
         type = self.token.getType(index)
         if type == "float" or type == "string" or type == "bool":
-            self.declareVar()
+            return self.declareVar()
+        elif type == "print":  # 打印函数
+            return self.compilePrint()
+        elif type == "input":  # 打印函数
+            return self.compileInput()
+        else:
+            tokens = self.tokenToList()
+            if "=" in tokens:  # 第一种赋值语句
+                if type == "id":
+                    return self.assignment1()
+                else:
+                    return errorExpect("a variable", self.len_num)
+            elif "=_" in tokens:  # 第二种赋值语句
+                if type == "id":
+                    return self.assignment2()
+                else:
+                    return errorExpect("a variable", self.len_num)
+            else:
+                warnUncheckBlock(self.len_num)
+                return enums.OK
 
     def ifBlock(self):
         pass
@@ -61,6 +80,100 @@ class Compiler(read.Read):
 
     def switchBlock(self):
         pass
+
+    def compilePrint(self):
+        pass
+
+    def compileInput(self):
+        pass
+
+    def assignment1(self):
+        """
+        进行类似于 苹果为苹果加3 的赋值运算
+        结束的时候指针指向=_
+        """
+        index, char = self.updateIndex()
+        if char == "id":  # 检测是否为id
+            name = self.token.getValue(index)
+            if name not in self.id:  # 是否初始化
+                return errorUndefine(name, self.len_num)
+            type = self.id[name][0]
+            index, char = self.forwordIndex(index)
+            if char != "=":
+                return errorExpect("=", self.len_num)
+            self.index_start, char = self.forwordIndex(index)
+            val = None
+            if type == "float":
+                val = self.ariExpression()
+            elif type == "bool":
+                val = self.logicExpression()
+            elif type == "string":
+                val = self.strExpression()
+            if val:
+                self.id[name][1] = val
+                return enums.OK
+            else:
+                return val
+        else:  # 不是 id 报错
+            return errorUnexpectChar(char, self.len_num)
+
+    def assignment2(self, print_error=True):
+        """
+        进行类似于 苹果加3也 的赋值运算
+        结束的时候指针指向=_
+        """
+        index, char = self.updateIndex()
+        while char and char != "=_" and char not in const.STREXP:
+            index, char = self.forwordIndex(index)
+        if char != "=_":
+            errorUnexpectChar(char, self.len_num, print_error)
+            return -1  # 代表不是第二类赋值语句
+        index, char = self.updateIndex()
+        if char == "id":
+            name = self.token.getValue(index)
+            if name not in self.id:
+                return errorUndefine(name, self.len_num)
+            type = self.id[name][0]
+            if type == "float":
+                self.index_start, char = self.forwordIndex(index)
+                return self.assignReadOperator(name)
+            else:
+                return errorUnexpectType(type, "flaot", self.len_num)
+        else:
+            return errorUnexpectChar(char, self.len_num)
+
+    def assignReadOperator(self, name):
+        """
+        进行检测运算符操作
+        """
+        index, char = self.updateIndex()
+        if char in ["+", "-", "*", "/"]:
+            operator = char
+            self.index_start, char = self.forwordIndex(index)
+            return self.assignReadAri(name, operator)
+        else:
+            return errorExpect("a operator", self.len_num)
+
+    def assignReadAri(self, name, operator):
+        val = self.ariExpression(False)
+        index, char = self.updateIndex()
+        if val is None:
+            return errorExpect("an expression", self.len_num)
+        elif char == "=_":  # 结束的时候指针指向=_
+            return self.calculate(name, operator, val)
+        else:
+            return errorExpect("=_", self.len_num)
+
+    def calculate(self, name, operator, val):
+        if operator == "+":
+            self.id[name][1] += val
+        elif operator == "-":
+            self.id[name][1] -= val
+        elif operator == "*":
+            self.id[name][1] *= val
+        elif operator == "/":
+            self.id[name][1] /= val
+        return self.id[name][1]
 
     def declareVar(self):
         """ "
@@ -123,7 +236,7 @@ class Compiler(read.Read):
         index = self.index_start
         char = self.token.getType(index)
         tokens = []
-        while char and char not in const.ARIEXP:
+        while char and char not in const.ARIEXP and char != "=_":
             # 算术表达式读到const.ARIEXP结束
             # ARIEXP = ["==", "and", "or", "<", ">", "<=", ">=", "!=", ",", "."]
             if char == "id":
@@ -131,17 +244,26 @@ class Compiler(read.Read):
                 name = self.token.getValue(index)
                 if name not in self.id:
                     return errorUndefine(name, self.len_num)
-                type = self.id[name][0]
-                value = self.id[name][1]
-                if value is None:
-                    return errorUninit(name, self.len_num)
-                if type != "float":  # 类型检测
-                    return errorUnexpectType(type, "float", self.len_num, print_error)
+                val = self.assignment2(False)
+                if val == -1:  # 说明不是第二类赋值语句
+                    type = self.id[name][0]
+                    value = self.id[name][1]
+                    if value is None:
+                        return errorUninit(name, self.len_num)
+                    if type != "float":  # 类型检测，如果不是float 那么就报错
+                        len_num = self.len_num
+                        return errorUnexpectType(type, "float", len_num, print_error)
+                    else:
+                        tokens.append(value)
+                elif val is None:
+                    return enums.ERROR
                 else:
-                    tokens.append(value)
+                    tokens.append(val)
+                    index, char = self.updateIndex()
             elif char == "num":  # 如果是数字
                 value = self.token.getValue(index)
                 tokens.append(value)
+                # 这里刚好会跳过=_
             elif char in ["+", "-", "*", "/"]:  # 算数表达式
                 tokens.append(char)
             else:  # 出现了其他符号
@@ -160,7 +282,7 @@ class Compiler(read.Read):
     def strExpression(self):
         """
         检查字符串表达式，并计算表达式中的值
-        返回字符串表达式的值
+        返回字符串表达式的值，错误返回None
         """
         index = self.index_start
         char = self.token.getType(index)
@@ -172,27 +294,27 @@ class Compiler(read.Read):
             if char == "str" and check == False:
                 string = self.token.getValue(index)
                 tokens += string
-                check = True
+                check = True  # 期待+或者结束
             elif char == "id" and check == False:
                 name = self.token.getValue(index)
                 if name not in self.id:  # 如果变量没有声明
                     return errorUndefine(name, self.len_num)
                 type = self.id[name][0]
                 val = self.id[name][1]
-                if val:
-                    if type == "float":
+                if val:  # 被初始化了
+                    if type == "float":  # 根据类型来决定下一步
                         val = str(val)
                     elif type == "bool":
                         if val == "true":
                             val = "阳"
                         else:
                             val = "阴"
-                    tokens += val
-                    check = True
+                    tokens += val  # 字符串粘贴
+                    check = True  # 期待+或者结束
                 else:
                     errorUninit(name, self.len_num)
             elif char == "+" and check:
-                check = False
+                check = False  # 期待一个字符串
             else:
                 if check:
                     return errorExpect("+", self.len_num)
@@ -293,3 +415,14 @@ class Compiler(read.Read):
 
     def updateIndex(self):
         return (self.index_start, self.token.getType(self.index_start))
+
+    def tokenToList(self):
+        """
+        返回从当前token的起始下标到终止下标的数组
+        """
+        index, char = self.updateIndex()
+        tokens = []
+        while index < self.index_end:
+            tokens.append(char)
+            index, char = self.forwordIndex(index)
+        return tokens
