@@ -3,6 +3,7 @@ from tools import enums
 from tools.calculate_expression import *
 from tools import const
 from tools.error import *
+from tools import tool_self
 
 
 class Compiler(read.Read):
@@ -82,10 +83,43 @@ class Compiler(read.Read):
         pass
 
     def compilePrint(self):
-        pass
+        self.index_start, char = self.forwordIndex(self.index_start)
+        if char != ":":
+            return errorExpect(":", self.len_num)
+        self.index_start, char = self.forwordIndex(self.index_start)
+        string = self.strExpression()
+        if string:
+            print(string)
+        else:
+            return enums.ERROR
+        return enums.OK
 
     def compileInput(self):
-        pass
+        self.index_start, char = self.forwordIndex(self.index_start)
+        if char != ":":
+            return errorExpect(":", self.len_num)
+        if self.index_end - self.index_start != 3:
+            string = "There is a problem with the input function."
+            return errorUniversal(string, self.len_num)
+        self.index_start, char = self.forwordIndex(self.index_start)
+        name = self.token.getValue(self.index_start)
+        if name not in self.id:
+            return errorUndefine(name, self.len_num)
+        type = self.id[name][0]
+        val = input()
+        if type == "float":
+            try:
+                val = int(val)  # 尝试转换为整数
+            except ValueError:
+                try:
+                    val = float(val)  # 尝试转换为浮点数
+                except ValueError:
+                    string = "It's not a number that's being entered."
+                    return errorUniversal(string, self.len_num)  # 如果无法转换，返回原始字符串
+        elif type == "bool":
+            val = tool_self.converseBool(val)
+        self.id[name][1] = val
+        return enums.OK
 
     def assignment1(self):
         """

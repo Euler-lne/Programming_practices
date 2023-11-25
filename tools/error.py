@@ -1,6 +1,13 @@
 from tools import enums
 
 
+def errorUniversal(char, len_num):
+    string = char
+    string += " The error near the line " + str(len_num) + "."
+    print(string)
+    return enums.ERROR
+
+
 def errorUndefine(name, len_num, is_print=True):
     if is_print:
         string = name + " have not been statement. "
