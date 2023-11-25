@@ -1,5 +1,18 @@
 def calculate_expression(tokens):
     precedence = {"+": 1, "-": 1, "*": 2, "/": 2}
+    if (
+        len(tokens) == 2 and tokens[0] in ["+", "-"] and tokens[1] not in ["+", "-"]
+    ):  # 检查是否为-2, +3这种形式
+        if tokens[0] == "+":
+            if "." in tokens[1]:
+                return float(tokens[1])
+            else:
+                return int(tokens[1])
+        else:
+            if "." in tokens[1]:
+                return 0 - float(tokens[1])
+            else:
+                return 0 - int(tokens[1])
 
     def apply_operator(operators, values):
         operator = operators.pop()  # 弹出一个运算符
@@ -47,11 +60,17 @@ def find_invalid_ari(sequence):
 
     if sequence is None:
         return -1
+    if (
+        len(sequence) == 2
+        and sequence[0] in ["+", "-"]
+        and sequence[1] not in ["+", "-"]
+    ):  # 检查是否为-2, +3这种形式
+        return None
 
     for idx, element in enumerate(sequence):
-        if element.isdigit():  # 如果元素是数字
+        if element not in operators:  # 如果元素是数字
             # 如果前一个元素也是数字，则表达式格式不正确，返回当前位置
-            if last_element and last_element.isdigit():
+            if last_element and last_element not in operators:
                 return idx
         elif element in operators:  # 如果元素是运算符
             # 如果前一个元素也是运算符，则表达式格式不正确，返回当前位置
@@ -82,6 +101,7 @@ def calculate_logic_expression(expression):
             return False
         else:
             return item
+
     if len(expression) == 1:
         return string_bool(expression[0])
 
@@ -115,7 +135,7 @@ def find_invalid_logic(sequence):
     valid_operators = {"and", "or"}
     has_operand = False
     if sequence is None:
-        return -1
+        return 0
 
     for idx, token in enumerate(sequence):
         if token in valid_values:
@@ -132,6 +152,54 @@ def find_invalid_logic(sequence):
         return len(sequence) - 1
 
     return None  # 如果表达式格式正确，则返回 None
+
+
+def calculate_compare_expression(sequence):
+    if len(sequence) == 1:
+        value = sequence[0]
+        if value != 0:
+            return "true"
+        else:
+            return "false"
+    left = sequence[0]
+    right = sequence[2]
+    compare = sequence[1]
+    result = "false"
+    if compare == "==":
+        result = left == right
+    if compare == "!=":
+        result = left != right
+    if compare == ">=":
+        result = left >= right
+    if compare == "<=":
+        result = left <= right
+    if compare == ">":
+        result = left > right
+    if compare == "<":
+        result = left < right
+    if result:
+        return "true"
+    else:
+        return "false"
+
+
+def find_invalid_compare(sequence):
+    COMPARE = ["==", "<", ">", "<=", ">=", "!="]
+    if len(sequence) == 1:
+        value = sequence[0]
+        if isinstance(value, int) or isinstance(value, float):
+            return None
+        else:
+            return 0
+    if len(sequence) != 3:
+        return 0
+    left = sequence[0]
+    right = sequence[2]
+    compare = sequence[1]
+    if left not in COMPARE and right not in COMPARE and compare in COMPARE:
+        return None
+    else:
+        return 0
 
 
 """

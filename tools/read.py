@@ -1,5 +1,6 @@
 from tools import token_self
 from tools import enums
+from tools.error import *
 
 
 class Read:
@@ -22,7 +23,6 @@ class Read:
         self.senten_state = enums.NONE  # 记录语句状态
         self.file = open(self.path, "r", encoding=self.encodeing)
 
-    # 读取待编译的文件
     def readBlock(self):
         """
         读取文件，边读边生成Token，保存到self.token中。
@@ -185,50 +185,26 @@ class Read:
         elif char == "；":
             self.token.addToken(";", char)
             self.checkID()
-        elif char.isdigit() or char == "-":  # 如果char是数字
+        elif char.isdigit():  # 如果char是数字
             temp_char = char
             file_position = self.file.tell()  # 记录文件指针位置
-            if char == "-":
+            char = self.file.read(1)
+            dot = 0
+            while char and (char.isdigit() or (char == "." and dot < 1)):
+                # 要么是数字，要么是.且.没有出现过
+                temp_char += char
+                if char == ".":
+                    dot += 1
+                file_position = self.file.tell()  # 记录文件指针位置
                 char = self.file.read(1)
-                if char and char.isdigit():
-                    dot = 0
-                    while char and (char.isdigit() or (char == "." and dot < 1)):
-                        # 要么是数字，要么是.且.没有出现过
-                        temp_char += char
-                        if char == ".":
-                            dot += 1
-                        file_position = self.file.tell()  # 记录文件指针位置
-                        char = self.file.read(1)
+            self.token.addToken("num", temp_char)
+            self.file.seek(file_position)  # 指针回退，应为每次都多读了以为
+            # 比如12.3.4，那么如果不会退位置那么指针就指向了第二个.，这样这个.就被舍去了
 
-                    if temp_char == "-":  # 说明只有一个"-"
-                        self.error(char)
-                        return enums.ERROR
-                    else:
-                        self.error(char)
-                        self.file.seek(file_position)  # 指针回退
-
-                else:  # 出错"-"后面没有跟着数字
-                    self.error("-" + char)
-                    return enums.ERROR
-            else:
-                char = self.file.read(1)
-                dot = 0
-                while char and (char.isdigit() or (char == "." and dot < 1)):
-                    # 要么是数字，要么是.且.没有出现过
-                    temp_char += char
-                    if char == ".":
-                        dot += 1
-                    file_position = self.file.tell()  # 记录文件指针位置
-                    char = self.file.read(1)
-                self.token.addToken("num", temp_char)
-                self.file.seek(file_position)  # 指针回退
-
-            pass
         elif "\u4e00" <= char <= "\u9fff":
             self.temp_id += char
         else:
-            self.error(char)
-            return enums.ERROR
+            return errorUnexpectChar(char, self.len_num)
         return enums.OK
 
     def checkID(self, is_swap=True):
@@ -243,9 +219,6 @@ class Read:
             self.temp_id = ""
             if is_swap:
                 self.token.swapToken()
-
-    def error(self, char):
-        print("Unexpected char: " + char + " in line " + str(self.len_num))
 
     def buildToken(self, char):
         """
