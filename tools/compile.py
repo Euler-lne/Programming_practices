@@ -98,6 +98,8 @@ class Compiler(read.Read):
                     else:  # 算数表达式类型，这里必定为type
                         val = self.logicExpression()
                     if val is not None:  # 表达式的值正确
+                        if name not in self.id:  # 防止出现 int =的情况
+                            return errorExpect(name, self.len_num)
                         self.id[name][1] = val  # 保存表达式的值
                         index = self.index_start  # 移动当前指针
                         char = self.token.getType(index)
@@ -162,11 +164,45 @@ class Compiler(read.Read):
         """
         index = self.index_start
         char = self.token.getType(index)
-        tokens = []
+        tokens = ""
+        check = False  # 检查是否出现 + str 或者 str + + 的情况
+        # 为False 代表可用继续加入字符
+        # True代表期待读到一个+或者已经结束
         while char and char not in const.STREXP:
+            if char == "str" and check == False:
+                string = self.token.getValue(index)
+                tokens += string
+                check = True
+            elif char == "id" and check == False:
+                name = self.token.getValue(index)
+                if name not in self.id:  # 如果变量没有声明
+                    return errorUndefine(name, self.len_num)
+                type = self.id[name][0]
+                val = self.id[name][1]
+                if val:
+                    if type == "float":
+                        val = str(val)
+                    elif type == "bool":
+                        if val == "true":
+                            val = "阳"
+                        else:
+                            val = "阴"
+                    tokens += val
+                    check = True
+                else:
+                    errorUninit(name, self.len_num)
+            elif char == "+" and check:
+                check = False
+            else:
+                if check:
+                    return errorExpect("+", self.len_num)
+                else:
+                    return errorExpect("a string or a variable", self.len_num)
             index, char = self.forwordIndex(index)
+        if check == False:
+            return errorExpect("a string or a variable", self.len_num)
         self.index_start = index
-        return "1"
+        return tokens
 
     def logicExpression(self):
         """
@@ -188,6 +224,8 @@ class Compiler(read.Read):
                     continue
                 elif char == "id":  # 不是运算符只用考虑，变量为布尔值的情况
                     name = self.token.getValue(index)
+                    if name not in self.id:
+                        return errorUndefine(name, self.len_num)
                     type = self.id[name][0]
                     val = self.id[name][1]
                     if type == "bool" and val:
