@@ -1,4 +1,4 @@
-def calculate_expression(tokens):
+def calculateExpression(tokens):
     """
     计算一个表达式的值，数字可以是字符串或者是数字
     """
@@ -17,7 +17,7 @@ def calculate_expression(tokens):
             else:
                 return 0 - int(tokens[1])
 
-    def apply_operator(operators, values):
+    def applyOperator(operators, values):
         operator = operators.pop()  # 弹出一个运算符
         right = values.pop()  # 弹出右操作数
         left = values.pop()  # 弹出左操作数
@@ -43,7 +43,7 @@ def calculate_expression(tokens):
                     # 最后一个运算符的优先级大于当前运算符的优先级
                     # 如果运算符堆栈没有符号那么表达式为False
                     # 也就是只有读取到* 或者 / 才进行运算操作
-                    apply_operator(operators, values)  # 执行运算
+                    applyOperator(operators, values)  # 执行运算
                 operators.append(token)  # 将运算符压入运算符堆栈
             else:  # 如果是数字或小数点则作为操作数压入值堆栈
                 if isinstance(token, int) or isinstance(token, float):
@@ -54,13 +54,13 @@ def calculate_expression(tokens):
                     else:
                         values.append(int(token))
         while operators:  # 执行剩余的运算
-            apply_operator(operators, values)
+            applyOperator(operators, values)
         return values[0]  # 返回最终结果
 
     return evaluate(tokens)
 
 
-def find_invalid_ari(sequence):
+def findInvalidAri(sequence):
     """
     检查表达式是否合理，合理则返回None，否则返回错误所在位置
     """
@@ -97,7 +97,7 @@ def find_invalid_ari(sequence):
     return None  # 如果表达式格式正确，则返回 None
 
 
-def calculate_logic_expression(expression):
+def calculateLogicExpression(expression):
     operators = []  # 运算符堆栈
     values = []  # 值堆栈
     valid_values = {"true", "false"}
@@ -114,7 +114,7 @@ def calculate_logic_expression(expression):
     if len(expression) == 1:
         return string_bool(expression[0])
 
-    def apply_operator(operators, values):
+    def applyOperator(operators, values):
         operator = operators.pop()  # 弹出一个运算符
         right = string_bool(values.pop())  # 弹出右操作数
         left = string_bool(values.pop())  # 弹出左操作数
@@ -127,16 +127,16 @@ def calculate_logic_expression(expression):
     for token in expression:
         if token in valid_operators:
             if len(operators) == 1:
-                apply_operator(operators, values)
+                applyOperator(operators, values)
             operators.append(token)
         elif token in valid_values:
             values.append(token)
-    apply_operator(operators, values)
+    applyOperator(operators, values)
 
     return values[0]
 
 
-def find_invalid_logic(sequence):
+def findInvalidLogic(sequence):
     """
     检查逻辑表达式是否合法，合法则返回 None，否则返回第一个不合法的位置
     """
@@ -163,7 +163,7 @@ def find_invalid_logic(sequence):
     return None  # 如果表达式格式正确，则返回 None
 
 
-def calculate_compare_expression(sequence):
+def calculateCompareExpression(sequence):
     if len(sequence) == 1:
         value = sequence[0]
         if value != 0:
@@ -192,7 +192,7 @@ def calculate_compare_expression(sequence):
         return "false"
 
 
-def find_invalid_compare(sequence):
+def findInvalidCompare(sequence):
     COMPARE = ["==", "<", ">", "<=", ">=", "!="]
     if len(sequence) == 1:
         value = sequence[0]

@@ -8,7 +8,6 @@ def main():
     compiler = compile.Compiler("./scripts/5.txt")
     compiler.saveToken()
     end = time.time()
-    print(end - start)
 
 
 if __name__ == "__main__":

@@ -34,9 +34,7 @@ class Compiler(read.Read):
                 return enums.ERROR
             # 错误检测结束进行语法分析
             self.end_index = self.token.getLen()
-
             val = None
-
             if self.state == enums.ACCEPT:  # 普通代码以句号结束的
                 val = self.normalBlock()
             elif self.state == enums.IF:  # if代码块
@@ -121,7 +119,7 @@ class Compiler(read.Read):
 
     def ifBlock(self, end):
         val = self.checkIfBlockFront()  # 指针指向了then的后一位
-        result = self.divideIfBlock(end) # 这里指针已经跳过了if
+        result = self.divideIfBlock(end)  # 这里指针已经跳过了if
         if val is None or result is None:
             return enums.ERROR
         return self.runIfBlock(val, result[0], result[1])
@@ -199,7 +197,7 @@ class Compiler(read.Read):
         这里的if 和 ！一定可以匹配因为，词法分析已经匹配过了
         返回i,j i指向了else 或者!后一位，j指向!后一位
         """
-        stack = ["if"] # 指针已经跳过了if 所以把if添加到栈底
+        stack = ["if"]  # 指针已经跳过了if 所以把if添加到栈底
         i = -1
         j = -1
         index, char = self.updateIndex()
@@ -428,14 +426,14 @@ class Compiler(read.Read):
     def assignment2(self, print_error=True):
         """
         进行类似于 苹果加3也 的赋值运算
-        结束的时候指针指向=_
+        结束的时候指针指向=_，返回"NO"代表不是第二种赋值方式
         """
         index, char = self.updateIndex()
         while char and char != "=_" and char not in const.STREXP:
             index, char = self.forwordIndex(index)
         if char != "=_":
             errorUnexpectChar(char, self.len_num, print_error)
-            return -1  # 代表不是第二类赋值语句
+            return "NO"  # 代表不是第二类赋值语句
         index, char = self.updateIndex()
         if char == "id":
             name = self.token.getValue(index)
@@ -550,7 +548,7 @@ class Compiler(read.Read):
                 if name not in self.id:  # 没有声明的不可以用
                     return errorUndefine(name, self.len_num)
                 val = self.assignment2(False)
-                if val == -1:  # 说明不是第二类赋值语句
+                if val == "NO":  # 说明不是第二类赋值语句
                     type = self.id[name][0]
                     value = self.id[name][1]
                     if value is None:
@@ -575,10 +573,10 @@ class Compiler(read.Read):
                 return errorUnexpectChar(char, self.len_num, print_error)
             index, char = self.forwordIndex(index)  # 指针前移
         # 写入tokens的元素只可能是数字字符串或者运算符
-        val = find_invalid_ari(tokens)  # 检测表达式是否合法
+        val = findInvalidAri(tokens)  # 检测表达式是否合法
         if val == None:  # 表达式合法
             self.start_index = index  # 指针调整
-            return calculate_expression(tokens)
+            return calculateExpression(tokens)
         elif val != -1:  # 表达式不合法
             return errorUnexpectChar(tokens[val], self.len_num)
         else:  # 表达式为空
@@ -671,11 +669,11 @@ class Compiler(read.Read):
             elif char in ["or", "and"]:
                 length = len(compare)
                 if length != 0:
-                    val = find_invalid_compare(compare)
+                    val = findInvalidCompare(compare)
                     if val is not None:
                         return errorUnexpectChar(compare[val], self.len_num)
                     else:
-                        val = calculate_compare_expression(compare)
+                        val = calculateCompareExpression(compare)
                         tokens.append(val)
                         compare = []
                 tokens.append(char)
@@ -684,17 +682,17 @@ class Compiler(read.Read):
             index, char = self.forwordIndex(index)
         length = len(compare)
         if length != 0:
-            val = find_invalid_compare(compare)
+            val = findInvalidCompare(compare)
             if val is not None:
                 return errorUnexpectChar(compare[val], self.len_num)
             else:
-                val = calculate_compare_expression(compare)
+                val = calculateCompareExpression(compare)
                 tokens.append(val)
                 compare = []
-        val = find_invalid_logic(tokens)
+        val = findInvalidLogic(tokens)
         if val is None:  # 逻辑表达式合法
             self.start_index = index  # 移动指针表示，已经读取完成
-            return calculate_logic_expression(tokens)
+            return calculateLogicExpression(tokens)
         else:  # 逻辑表达式不合法
             return errorUnexpectChar(tokens[val], self.len_num)
 
