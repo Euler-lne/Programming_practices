@@ -1,6 +1,6 @@
-from tools import token_self
 from tools import enums
 from tools.error import *
+from tools import const
 
 
 class Read:
@@ -12,7 +12,6 @@ class Read:
     def __init__(self, path, encodeing="utf-8"):
         self.path = path  # 文件路径
         self.encodeing = encodeing  # 编码
-        self.token = token_self.Token()  # 用于记录当前的Token
         self.temp_id = ""  # 用于记录当前不为关键字的汉字
         self.is_conmment = False  # 标记现在是否处于注释状态
         self.is_string = False  # 标记现在是否处于字符串状态
@@ -25,11 +24,11 @@ class Read:
 
     def readBlock(self):
         """
-        读取文件，边读边生成Token，保存到self.token中。
+        读取文件，边读边生成Token，保存到const.token中。
         每次读取到逗号，如果有分支或者循环读取到相应的分支或者循环的终！
         返回enums.ERROR代表出现了词法错误。
         """
-        len = self.token.getLen()
+        len = const.token.getLen()
         while True:
             char = self.file.read(1)
             if not char:
@@ -41,7 +40,7 @@ class Read:
                 # 出现错误
                 self.file.close()
                 return enums.ERROR
-            elif len != self.token.getLen():
+            elif len != const.token.getLen():
                 # 如果Token长度在循环终改变了
                 temp = self.divideToken()
                 if temp == enums.ACCEPT:
@@ -50,7 +49,7 @@ class Read:
                     return state
                 elif temp == enums.ERROR:
                     return enums.ERROR
-            len = self.token.getLen()
+            len = const.token.getLen()
 
     def checkChar(self, char):
         """
@@ -82,27 +81,27 @@ class Read:
                 char = self.file.read(1)
                 temp_char += char
                 if char and char == "曰":
-                    self.token.addToken(match_type, temp_char)
+                    const.token.addToken(match_type, temp_char)
                     self.checkID()
                 else:
                     self.temp_id += temp_char
         elif char == "为":
-            self.token.addToken("=", char)
+            const.token.addToken("=", char)
             self.checkID()
         elif char == "也":
-            self.token.addToken("=_", char)
+            const.token.addToken("=_", char)
             self.checkID()
         elif char == "加" or char == "+":
-            self.token.addToken("+", char)
+            const.token.addToken("+", char)
             self.checkID()
         elif char == "减" or char == "-":
-            self.token.addToken("-", char)
+            const.token.addToken("-", char)
             self.checkID()
         elif char == "乘" or char == "*":
-            self.token.addToken("*", char)
+            const.token.addToken("*", char)
             self.checkID()
         elif char == "除" or char == "/":
-            self.token.addToken("/", char)
+            const.token.addToken("/", char)
             self.checkID()
         elif char == "若":
             temp_char = char
@@ -110,23 +109,23 @@ class Read:
             char = self.file.read(1)
             if char and char == "为":
                 temp_char += char
-                self.token.addToken("case", temp_char)
+                const.token.addToken("case", temp_char)
                 self.checkID()
             else:
                 self.file.seek(file_position)  # 指针回退
-                self.token.addToken("if", temp_char)
+                const.token.addToken("if", temp_char)
                 self.checkID()
         elif char == "则":
-            self.token.addToken("then", char)
+            const.token.addToken("then", char)
             self.checkID()
         elif char == "凡":
-            self.token.addToken("while", char)
+            const.token.addToken("while", char)
             self.checkID()
         elif char == "终":
-            self.token.addToken("end", char)
+            const.token.addToken("end", char)
             self.checkID()
         elif char == "者":
-            self.token.addToken("switch", char)
+            const.token.addToken("switch", char)
             self.checkID()
         elif char == "非":
             temp_char = char
@@ -144,49 +143,49 @@ class Read:
             if match_type == "":  # 没有匹配，如：非他
                 self.temp_id += temp_char
             else:
-                self.token.addToken(match_type, temp_char)
+                const.token.addToken(match_type, temp_char)
                 self.checkID()
         elif char == "同":
-            self.token.addToken("==", char)
+            const.token.addToken("==", char)
             self.checkID()
         elif char == "且":
-            self.token.addToken("and", char)
+            const.token.addToken("and", char)
             self.checkID()
         elif char == "或":
-            self.token.addToken("or", char)
+            const.token.addToken("or", char)
             self.checkID()
         elif char == "小":
-            self.token.addToken("<", char)
+            const.token.addToken("<", char)
             self.checkID()
         elif char == "大":
-            self.token.addToken(">", char)
+            const.token.addToken(">", char)
             self.checkID()
         elif char == "曰":
-            self.token.addToken("print", char)
+            const.token.addToken("print", char)
             self.checkID()
         elif char in ["获", "得", "受"]:
-            self.token.addToken("input", char)
+            const.token.addToken("input", char)
             self.checkID()
         elif char == "阴":
-            self.token.addToken("false", char)
+            const.token.addToken("false", char)
             self.checkID()
         elif char == "阳":
-            self.token.addToken("true", char)
+            const.token.addToken("true", char)
             self.checkID()
         elif char == "！":
-            self.token.addToken("!", char)
+            const.token.addToken("!", char)
             self.checkID()
         elif char == "：":
-            self.token.addToken(":", char)
+            const.token.addToken(":", char)
             self.checkID()
         elif char == "，":
-            self.token.addToken(",", char)
+            const.token.addToken(",", char)
             self.checkID()
         elif char == "。":
-            self.token.addToken(".", char)
+            const.token.addToken(".", char)
             self.checkID()
         elif char == "；":
-            self.token.addToken(";", char)
+            const.token.addToken(";", char)
             self.checkID()
         elif char.isdigit():  # 如果char是数字
             temp_char = char
@@ -200,7 +199,7 @@ class Read:
                     dot += 1
                 file_position = self.file.tell()  # 记录文件指针位置
                 char = self.file.read(1)
-            self.token.addToken("num", temp_char)
+            const.token.addToken("num", temp_char)
             self.file.seek(file_position)  # 指针回退，应为每次都多读了以为
             # 比如12.3.4，那么如果不会退位置那么指针就指向了第二个.，这样这个.就被舍去了
 
@@ -214,14 +213,14 @@ class Read:
         """
         作用：检查是否为ID，由于ID没有特定的标识，
         所以不为buildToken中的所有汉字都有可能为ID。
-        在两个能匹配项之间的汉字记为ID，能匹配指的是处于token.md的
+        在两个能匹配项之间的汉字记为ID，能匹配指的是处于const.token.md的
         当buildToken检测匹配时才调用这个函数进行添加ID
         """
         if self.temp_id != "":
-            self.token.addToken("id", self.temp_id)
+            const.token.addToken("id", self.temp_id)
             self.temp_id = ""
             if is_swap:
-                self.token.swapToken()
+                const.token.swapToken()
 
     def buildToken(self, char):
         """
@@ -243,14 +242,14 @@ class Read:
         """
         将Token 保存到指定路径，指定编码，指定列数
         """
-        if self.token.getLen() == 0:
+        if const.token.getLen() == 0:
             print("Token is empety!")
         else:
             if ".txt" not in path:
                 path = path + str(self.path).split("/")[-1]
             with open(path, mode="w", encoding=encoding) as f:
                 j = 0
-                for i in self.token.token:
+                for i in const.token.token:
                     f.write(str(i))
                     j += 1
                     if j == col:
@@ -269,7 +268,7 @@ class Read:
             if len(self.stack1) != 0:  # 长度不为0说明还是字符串
                 self.string += char
             else:  # 长度为0说明字符串结束
-                self.token.addToken("str", self.string)
+                const.token.addToken("str", self.string)
                 self.is_string = False
                 self.string = ""
         else:
@@ -284,21 +283,21 @@ class Read:
         所以，divideToken函数之后在Token改变了才调用
         """
         if self.senten_state == enums.NONE:
-            if self.token.getEndType() == ".":  # 最后一个元素是"."说明这个一语句
+            if const.token.getEndType() == ".":  # 最后一个元素是"."说明这个一语句
                 self.senten_state = enums.ACCEPT
                 return enums.ACCEPT
-            elif self.token.getEndType() == "if":
+            elif const.token.getEndType() == "if":
                 self.senten_state = enums.IF
                 self.stack2.append("if")
-            elif self.token.getEndType() == "while":
+            elif const.token.getEndType() == "while":
                 self.senten_state = enums.WHILE
                 self.stack2.append("while")
-            elif self.token.getEndType() == "switch":
+            elif const.token.getEndType() == "switch":
                 self.senten_state = enums.SWITCH
                 self.stack2.append("switch")
         else:
-            temp = self.token.getEndType()
-            if self.token.getEndType() == "!":
+            temp = const.token.getEndType()
+            if const.token.getEndType() == "!":
                 self.stack2.pop()
                 if len(self.stack2) == 0:  # 长度为0说明代码块匹配结束
                     return enums.ACCEPT
