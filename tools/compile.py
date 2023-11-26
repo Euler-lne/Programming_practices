@@ -57,7 +57,7 @@ class Compiler(read.Read):
         elif type == "input":  # 打印函数
             return self.compileInput()
         else:
-            tokens = self.tokenToList()
+            tokens = self.tokenToList(".")  # 只将逗号之前的划分为一个列表
             if "=" in tokens:  # 第一种赋值语句
                 if type == "id":
                     return self.assignment1()
@@ -75,44 +75,76 @@ class Compiler(read.Read):
                     return val
                 else:
                     return errorExpect("a variable", self.len_num)
-            else:
-                warnUncheckBlock(self.len_num)
-                return enums.OK
+            else:  # 无用语句
+                return errorUnhelpfulStatement(self.len_num)
 
     def runBlock(self, end):
-        """end要指向.下一位"""
-        if self.start_index == end:
+        """结束后指向下一个新的代码块"""
+        if self.start_index == end:  # 递归结束条件
             return enums.OK
+        off = 0
+        val = None
         index, char = self.updateIndex()
-        state = 0
         if char == "if":
-            self.ifBlock(end)
+            val = self.ifBlock(end)  # 指向完后指针指向下一个待指向语句
         elif char == "while":
-            state = 2
+            return self.whileBlock(end)
+        elif char == "end": # 读到end，跳过end，end也代表代码块要结束了
+            if self.checkBlockEnd(end): # 检查end 的正确性
+                self.start_index = end # switch跳过了中间代码，其他跳过了end;|end!
+                val = "end" # 正确则改变val的值，因为后面还有可能有语句
         else:
             index, char = self.forwordIndex(index)
             if char == "switch":
-                state = 3
+                return self.switchBlock(end)
             else:
-                self.normalBlock()  # 执行完成之后会指向.
-                self.start_index += 1  # 跳过.
-                return self.runBlock(end)
+                val = self.normalBlock()  # 执行完成之后会指向.
+                off = 1
+        return self.forwordBlock(val, end, off)
+
+    def forwordBlock(self, val, end, off=0):
+        if val is not None:
+            self.start_index += off  # 跳过.
+            return self.runBlock(end)
+        else:
+            return val
 
     def ifBlock(self, end):
-        """执行if块语句，能够进入到这里的都是代表能够在词法分析分块的。end要指向下一条要执行的语句"""
-        val = self.checkIfBlock()
-        mid = self.divideIfBlock(end)  # 指向了else 或者 end
-        if val:
-            self.runBlock(mid - 2)
-            self.start_index = end
-        else:
-            self.start_index = mid + 1
-            self.runBlock(end)
-        return enums.OK
-        # 这里-2的原因，如果为then 那么前方还有两个字符end;
-        # 如果为end 那么前方也有两个字符end!
+        val = self.checkIfBlockFront()  # 指针指向了then的后一位
+        result = self.divideIfBlock(end)
+        if val is None or result is None:
+            return enums.ERROR
+        return self.runIfBlock(val, result[0], result[1])
 
-    def checkIfBlock(self):
+    def runIfBlock(self, val, mid, end):
+        """执行if块语句，能够进入到这里的都是代表能够在词法分析分块的。end要指向下一条要执行的语句"""
+        if self.checkIfBlockEnd(mid, end) is None:
+            return enums.ERROR
+        if val:
+            if self.runBlock(mid) is not None:
+                self.start_index = end
+            else:
+                return enums.ERROR
+        else:
+            if mid != end:  # 不等说明有else mid 指向else，相等指向下一个待执行语句，不用 +1
+                self.start_index = mid + 1
+            else:
+                self.start_index = mid
+            if self.runBlock(end) is None:
+                return enums.ERROR
+        return enums.OK
+
+    def checkBlockEnd(self, end):
+        """检查代码块结束的合法性，合法返回1，不合法返回None。开始指针不移动"""
+        index, char = self.getIndex(end - 2)
+        if char != "end":
+            return errorExpect("end", self.len_num)
+        index, char = self.forwordIndex(index)
+        if char != "!" and char != ";":
+            return errorExpect("! or ;", self.len_num)
+        return enums.OK
+
+    def checkIfBlockFront(self):
         """检查if语句的前半部分，也就是 若……，则
         返回后的指针指向则的后一位
         """
@@ -134,13 +166,32 @@ class Compiler(read.Read):
         self.start_index = index
         return val
 
+    def checkIfBlockEnd(self, mid, end):
+        """失败返回None，正确返回1"""
+        if mid != end:
+            index, char = self.getIndex(mid - 2)
+            if char != "end":
+                return errorExpect("end", self.len_num)
+            index, char = self.forwordIndex(index)
+            if char != ";":
+                return errorExpect(";", self.len_num)
+        index, char = self.getIndex(end - 2)
+        if char != "end":
+            return errorExpect("end", self.len_num)
+        index, char = self.forwordIndex(index)
+        if char != "!":
+            return errorExpect("!", self.len_num)
+        return enums.OK
+
     def divideIfBlock(self, end):
         """
         将if 块划分为两块，或者一块，也就是寻找转跳下标。
         这里的if 和 ！一定可以匹配因为，词法分析已经匹配过了
+        返回i,j i指向了else 或者!后一位，j指向!后一位
         """
         stack = ["if"]
         i = -1
+        j = -1
         index, char = self.updateIndex()
         while index < end:
             if char == "if":
@@ -148,17 +199,18 @@ class Compiler(read.Read):
             elif char == "else" and len(stack) == 1:
                 # 得到不成立时候的下标
                 i = index  # 指向else
-                break
             elif char == "!":
-                if len(stack) == 1:  # 得到if块结束的下标，这个为end-1
+                stack.pop()
+                if len(stack) == 0:  # 得到if块结束的下标，这个为end-1
+                    j = index
                     break
-                else:
-                    stack.pop()
             index, char = self.forwordIndex(index)
+        if len(stack) != 0:
+            return errorExpect("!", self.len_num)
         if i == -1:  # 为-1说明不存在else语句
-            return end
+            return (j + 1, j + 1)
         else:
-            return i
+            return (i, j + 1)  # j要指向下一个待执行的语句，不是!
 
     def whileBlock(self, end):
         pass
@@ -537,13 +589,13 @@ class Compiler(read.Read):
     def getIndex(self, index):
         return (index, self.token.getType(index))
 
-    def tokenToList(self):
+    def tokenToList(self, end_char=""):
         """
         返回从当前token的起始下标到终止下标的数组
         """
         index, char = self.updateIndex()
         tokens = []
-        while index < self.end_index:
+        while index < self.end_index and char != end_char:
             tokens.append(char)
             index, char = self.forwordIndex(index)
         return tokens

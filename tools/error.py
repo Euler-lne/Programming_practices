@@ -61,7 +61,7 @@ def errorExpect(char, len_num, is_print=True):
     return enums.ERROR
 
 
-def warnUncheckBlock(len_num):
+def errorUnhelpfulStatement(len_num):
     string = (
         "Note that we detect that the script you wrote has an unhelpful statement, "
     )
@@ -69,3 +69,4 @@ def warnUncheckBlock(len_num):
     string += ". You should examine your code near "
     string += str(len_num) + "."
     print(string)
+    return enums.ERROR
