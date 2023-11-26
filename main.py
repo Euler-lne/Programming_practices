@@ -5,7 +5,7 @@ from tools.calculate_expression import *
 
 def main():
     start = time.time()
-    compiler = compile.Compiler("./scripts/1.txt")
+    compiler = compile.Compiler("./scripts/5.txt")
     compiler.saveToken()
     end = time.time()
     print(end - start)

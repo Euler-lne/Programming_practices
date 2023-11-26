@@ -29,7 +29,10 @@ def calculate_expression(tokens):
         elif operator == "*":
             values.append(left * right)
         elif operator == "/":
-            values.append(left / right)
+            if isinstance(left, int) and isinstance(right, int):
+                values.append(left // right)
+            else:
+                values.append(left / right)
 
     def evaluate(tokens):
         operators = []  # 运算符堆栈

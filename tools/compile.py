@@ -35,14 +35,18 @@ class Compiler(read.Read):
             # 错误检测结束进行语法分析
             self.end_index = self.token.getLen()
 
+            val = None
+
             if self.state == enums.ACCEPT:  # 普通代码以句号结束的
-                self.normalBlock()
+                val = self.normalBlock()
             elif self.state == enums.IF:  # if代码块
-                self.ifBlock(self.end_index)
+                val = self.ifBlock(self.end_index)
             elif self.state == enums.SWITCH:  # switch 代码块
-                self.switchBlock()
+                val = self.switchBlock(self.end_index)
             elif self.state == enums.WHILE:  # while 代码块
-                self.whileBlock()
+                val = self.whileBlock(self.end_index)
+            if val is None:
+                return enums.NONE
 
             self.start_index = self.token.len  # 准备读取下一个代码块
 
@@ -66,7 +70,7 @@ class Compiler(read.Read):
             elif "=_" in tokens:  # 第二种赋值语句
                 if type == "id":
                     val = self.assignment2()
-                    if val:
+                    if val is not None:  # 不为None
                         self.start_index, char = self.forwordIndex(self.start_index)
                         if char == ".":  # 保证都以.结束
                             return val
@@ -88,15 +92,21 @@ class Compiler(read.Read):
         if char == "if":
             val = self.ifBlock(end)  # 指向完后指针指向下一个待指向语句
         elif char == "while":
-            return self.whileBlock(end)
-        elif char == "end": # 读到end，跳过end，end也代表代码块要结束了
-            if self.checkBlockEnd(end): # 检查end 的正确性
-                self.start_index = end # switch跳过了中间代码，其他跳过了end;|end!
-                val = "end" # 正确则改变val的值，因为后面还有可能有语句
+            i = self.divideWhileSwitchBlock(end)
+            if i is None:
+                return enums.ERROR
+            val = self.whileBlock(i)
+        elif char == "end":  # 读到end，跳过end，end也代表代码块要结束了
+            if self.checkBlockEnd(end):  # 检查end 的正确性
+                self.start_index = end  # switch跳过了中间代码，其他跳过了end;|end!
+                val = "end"  # 正确则改变val的值，因为后面还有可能有语句
         else:
             index, char = self.forwordIndex(index)
             if char == "switch":
-                return self.switchBlock(end)
+                i = self.divideWhileSwitchBlock(end)
+                if i is None:
+                    return enums.ERROR
+                val = self.switchBlock(i)  # 由于存在递归的情况，不是每一次都是刚好在！的位置停
             else:
                 val = self.normalBlock()  # 执行完成之后会指向.
                 off = 1
@@ -111,7 +121,7 @@ class Compiler(read.Read):
 
     def ifBlock(self, end):
         val = self.checkIfBlockFront()  # 指针指向了then的后一位
-        result = self.divideIfBlock(end)
+        result = self.divideIfBlock(end) # 这里指针已经跳过了if
         if val is None or result is None:
             return enums.ERROR
         return self.runIfBlock(val, result[0], result[1])
@@ -120,7 +130,7 @@ class Compiler(read.Read):
         """执行if块语句，能够进入到这里的都是代表能够在词法分析分块的。end要指向下一条要执行的语句"""
         if self.checkIfBlockEnd(mid, end) is None:
             return enums.ERROR
-        if val:
+        if val:  # val 为 True  或者是 False
             if self.runBlock(mid) is not None:
                 self.start_index = end
             else:
@@ -189,12 +199,12 @@ class Compiler(read.Read):
         这里的if 和 ！一定可以匹配因为，词法分析已经匹配过了
         返回i,j i指向了else 或者!后一位，j指向!后一位
         """
-        stack = ["if"]
+        stack = ["if"] # 指针已经跳过了if 所以把if添加到栈底
         i = -1
         j = -1
         index, char = self.updateIndex()
         while index < end:
-            if char == "if":
+            if char in ["if", "while", "switch"]:
                 stack.append(char)
             elif char == "else" and len(stack) == 1:
                 # 得到不成立时候的下标
@@ -213,10 +223,138 @@ class Compiler(read.Read):
             return (i, j + 1)  # j要指向下一个待执行的语句，不是!
 
     def whileBlock(self, end):
-        pass
+        start = self.start_index
+        val = self.checkWhileBlockFront()
+        if val is None:
+            return enums.ERROR
+        if val:  # val 为 True 或者 False
+            if self.runBlock(end) is not None:  # 执行while代码块
+                self.start_index = start  # 执行结束改变指针
+                return self.whileBlock(end)  # 递归条用
+            else:
+                return enums.ERROR
+        else:  # 递归结束出口
+            self.start_index = end
+        return enums.OK
+
+    def checkWhileBlockFront(self):
+        index, char = self.updateIndex()
+        if char != "while":
+            return errorExpect("while", self.len_num)
+        index, char = self.forwordIndex(index)  # 向前移动一位
+        self.start_index = index  # 要进入另外一个函数需要改变self.start_index
+        val = self.logicExpression()
+        if val is None:
+            return enums.ERROR
+        index, char = self.updateIndex()
+        if char != ",":
+            return errorExpect(",", self.len_num)
+        index, char = self.forwordIndex(index)  # 向前移动一位
+        if char != "then":
+            return errorExpect("then", self.len_num)
+        index, char = self.forwordIndex(index)  # 向前移动一位
+        self.start_index = index
+        return val
+
+    def divideWhileSwitchBlock(self, end):
+        """返回指向!后一个的指针，指针起始位置指向["if", "while", "switch"]"""
+        stack = []  # 指针起始位置指向["if", "while", "switch"]所以不用向栈里面添加任何元素
+        i = -1
+        index, char = self.updateIndex()
+        while index < end:
+            if char in ["if", "while", "switch"]:
+                stack.append(char)
+            elif char == "!":
+                stack.pop()
+                if len(stack) == 0:  # 得到if块结束的下标，这个为end-1
+                    i = index
+                    break
+            index, char = self.forwordIndex(index)
+        if len(stack) != 0:
+            return errorExpect("!", self.len_num)
+        return i + 1
 
     def switchBlock(self, end):
-        pass
+        name = self.checkSwitchBlockFront()
+        if name is None:
+            return enums.ERROR
+        val = self.findRightPositon(name, end)
+        if val is None:
+            return enums.ERROR
+        else:
+            self.start_index = end
+            return enums.OK
+
+    def checkSwitchBlockFront(self):
+        """指针指向了:后方，正确返回变量名字，错误返回None"""
+        index, char = self.updateIndex()
+        if char != "id":
+            return errorExpect("id", self.len_num)
+        name = self.token.getValue(index)
+        if name not in self.id:  # 没有声明的不可以用
+            return errorUndefine(name, self.len_num)
+        type = self.id[name][0]
+        if type == "bool":
+            return errorUnexpectType("bool", "float or string", self.len_num)
+        index, char = self.forwordIndex(index)
+        if char != "switch":
+            return errorExpect("switch", self.len_num)
+        index, char = self.forwordIndex(index)
+        if char != ":":
+            return errorExpect(":", self.len_num)
+        index, char = self.forwordIndex(index)
+        self.start_index = index
+        return name
+
+    def findRightPositon(self, name, end):
+        index, char = self.updateIndex()
+        while index < end:
+            if char == "case":
+                self.start_index = index  # 更新下标
+                match = self.checkSwitchBranch(name)
+                if match is None:
+                    return enums.ERROR
+                if match:  # 如果两个值相等了，就退出
+                    self.runBlock(end)  # 开始指针指向了正确位置
+                    break
+            elif char == "else":
+                index, char = self.forwordIndex(index)
+                self.start_index = index  # 让开始指针指向正确位置
+                self.runBlock(end)
+                break
+            index, char = self.forwordIndex(index)
+        return enums.OK
+
+    def checkSwitchBranch(self, name):
+        """检查每一个分支语句的前半部分是否满足要求，退出后指针指向then后一位"""
+        index, char = self.updateIndex()
+        if char != "case":
+            return errorExpect("case", self.len_num)
+        index, char = self.forwordIndex(index)
+        self.start_index = index  # 要调用运算函数需要调整指针
+        type = self.id[name][0]
+        value = self.id[name][1]
+        val = None
+        if type == "float":
+            val = self.ariExpression()
+            if val is None:
+                return enums.ERROR
+        else:  # 只有可能为float 或者 string，应为语法定义
+            val = self.strExpression()
+            if val is None:
+                return enums.ERROR
+        index, char = self.updateIndex()  # 调用完运算函数需要调整指针
+        if char != ",":
+            return errorExpect(",", self.len_num)
+        index, char = self.forwordIndex(index)
+        if char != "then":
+            return errorExpect("then", self.len_num)
+        index, char = self.forwordIndex(index)
+        self.start_index = index
+        if val == value:
+            return True
+        else:
+            return False
 
     def compilePrint(self):
         self.start_index, char = self.forwordIndex(self.start_index)
@@ -279,7 +417,7 @@ class Compiler(read.Read):
                 val = self.logicExpression()
             elif type == "string":
                 val = self.strExpression()
-            if val:
+            if val is not None:  # 不为None
                 self.id[name][1] = val
                 return enums.OK
             else:
@@ -361,7 +499,7 @@ class Compiler(read.Read):
             while char and char not in [",", ".", "="]:
                 if char == "id":
                     name = self.token.getValue(index)
-                    if name in self.id:
+                    if name in self.id:  # 声明过的变量不可以声明
                         return errorInit(name, self.len_num)
                     self.id[name] = []
                     self.id[name].append(type)
@@ -391,8 +529,6 @@ class Compiler(read.Read):
                     return errorExpect("an expression", self.len_num)
             elif char == ",":  # 向前移动指针防止死循环
                 index, char = self.forwordIndex(index)
-            else:  # 赋值语句中出现了其他字符
-                return errorUnexpectChar(char, self.len_num)
         return enums.OK
 
     def ariExpression(self, print_error=True):
@@ -411,7 +547,7 @@ class Compiler(read.Read):
             if char == "id":
                 # 如果是id
                 name = self.token.getValue(index)
-                if name not in self.id:
+                if name not in self.id:  # 没有声明的不可以用
                     return errorUndefine(name, self.len_num)
                 val = self.assignment2(False)
                 if val == -1:  # 说明不是第二类赋值语句
@@ -470,11 +606,11 @@ class Compiler(read.Read):
                     return errorUndefine(name, self.len_num)
                 type = self.id[name][0]
                 val = self.id[name][1]
-                if val:  # 被初始化了
+                if val is not None:  # 被初始化了
                     if type == "float":  # 根据类型来决定下一步
                         val = str(val)
                     elif type == "bool":
-                        if val:
+                        if val:  # 返回True / False
                             val = "阳"
                         else:
                             val = "阴"
@@ -486,7 +622,7 @@ class Compiler(read.Read):
                 check = False  # 期待一个字符串
             else:
                 if check:
-                    return errorExpect("+", self.len_num)
+                    return errorExpect("+ or .", self.len_num)
                 else:
                     return errorExpect("a string or a variable", self.len_num)
             index, char = self.forwordIndex(index)
@@ -509,7 +645,7 @@ class Compiler(read.Read):
             if char in ["id", "num", "-"]:
                 self.start_index = index
                 val = self.ariExpression()
-                if val:
+                if val is not None:
                     compare.append(val)
                     index, char = self.updateIndex()
                     continue
@@ -536,7 +672,7 @@ class Compiler(read.Read):
                 length = len(compare)
                 if length != 0:
                     val = find_invalid_compare(compare)
-                    if val:
+                    if val is not None:
                         return errorUnexpectChar(compare[val], self.len_num)
                     else:
                         val = calculate_compare_expression(compare)
@@ -549,7 +685,7 @@ class Compiler(read.Read):
         length = len(compare)
         if length != 0:
             val = find_invalid_compare(compare)
-            if val:
+            if val is not None:
                 return errorUnexpectChar(compare[val], self.len_num)
             else:
                 val = calculate_compare_expression(compare)
