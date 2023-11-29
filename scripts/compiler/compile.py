@@ -6,12 +6,6 @@ from tools.calculate_expression import *
 from tools import const
 from tools.error import *
 
-
-const.start_index = 0  # 当前的Token起始下标
-const.end_index = 0  # 当前Token的结束下标的后一位
-const.id = {}  # 用于保存const.id 以及其对应的值，字典键为变量名字，值为一个类型和变量值
-
-
 class Compiler(read.Read):
     """
     用于词法分析，解析目标代码
