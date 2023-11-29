@@ -138,15 +138,15 @@ def compileFind(len_num):
     string = base.strExpression(len_num)
     if string:
         result = tool.findData(string)
+        print("----------------------")
         if result is None:
             print("查无内容")
         else:
-            print("----------------------")
             for lens in result:
                 for char in lens:
                     print(char, end=" ")
                 print("")
-            print("----------------------")
+        print("----------------------")
     else:
         return enums.ERROR
     return enums.OK
