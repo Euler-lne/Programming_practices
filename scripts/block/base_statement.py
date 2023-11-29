@@ -120,7 +120,7 @@ def logicExpression(len_num):
     while char and char not in const.STREXP:  # 循环到遇到, 或者.
         if char in ["id", "num", "-"]:  # 如果是这三种说明为算数表达式
             const.start_index = index
-            val = ariExpression(len_num)
+            val = ariExpression(len_num, False)
             if val is not None:
                 compare.append(val)
                 index, char = tool.updateIndex()
@@ -131,9 +131,9 @@ def logicExpression(len_num):
                     return errorUndefine(name, len_num)
                 type = const.id[name][0]
                 val = const.id[name][1]
-                if type == "bool" and val:
+                if type == "bool" and val is not None:
                     val = tool.boolToString(val)
-                    tokens.append(val)
+                    compare.append(val)
                 elif val is None:  # 没有初始化
                     return errorUninit(name, len_num)
                 else:  # 不是bool变量
@@ -141,7 +141,7 @@ def logicExpression(len_num):
             else:  # 运算符号出现问题
                 return errorExpect("arithmetic expressions", len_num)
         elif char == "true" or char == "false":
-            tokens.append(char)
+            compare.append(char)
         elif char in const.COMPARE:
             compare.append(char)
         elif char in ["or", "and"]:

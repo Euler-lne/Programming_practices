@@ -166,6 +166,9 @@ class Read:
         elif char in ["获", "得", "受"]:
             const.token.addToken("input", char)
             self.checkID()
+        elif char == "寻":
+            const.token.addToken("find", char)
+            self.checkID()
         elif char == "阴":
             const.token.addToken("false", char)
             self.checkID()

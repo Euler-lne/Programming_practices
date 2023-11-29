@@ -105,7 +105,7 @@ def switchBlock(len_num, end):
 def findRightPositon(len_num, name, end):
     index, char = tool.updateIndex()
     while index < end:
-        if char == "case":
+        if char == "case":  # 检测case
             const.start_index = index  # 更新下标
             match = Bswitch.checkSwitchBranch(len_num, name)
             if match is None:
@@ -113,11 +113,15 @@ def findRightPositon(len_num, name, end):
             if match:  # 如果两个值相等了，就退出
                 runBlock(len_num, end)  # 开始指针指向了正确位置
                 break
-        elif char == "else":
+        elif char == "else":  # 检测else
             index, char = tool.forwordIndex(index)
             const.start_index = index  # 让开始指针指向正确位置
             runBlock(len_num, end)
             break
+        elif char == "switch":  # 需要跳过switch 语句
+            index = Bwhile.divideWhileSwitchBlock(len_num, end) - 1  # 指向！就好了
+            char = const.token.getType(index) # 更新字符
+            continue
         index, char = tool.forwordIndex(index)
     return enums.OK
 

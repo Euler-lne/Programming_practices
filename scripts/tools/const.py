@@ -16,6 +16,8 @@ STREXP = [",", "."]
 # 表示算数符号
 ARI = ["+", "-", "*", "/"]
 
+PATH = "data.txt"
+
 start_index = 0  # 当前的Token起始下标
 end_index = 0  # 当前Token的结束下标的后一位
 id = {}  # 用于保存id 以及其对应的值，字典键为变量名字，值为一个类型和变量值

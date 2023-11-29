@@ -15,6 +15,8 @@ def normalBlock(len_num):
         return compilePrint(len_num)
     elif type == "input":  # 打印函数
         return compileInput(len_num)
+    elif type == "find":
+        return compileFind(len_num)
     else:
         tokens = tool.tokenToList(".")  # 只将逗号之前的划分为一个列表
         if "=" in tokens:  # 第一种赋值语句
@@ -104,9 +106,6 @@ def compileInput(len_num):
     const.start_index, char = tool.forwordIndex(const.start_index)
     if char != ":":
         return errorExpect(":", len_num)
-    if const.end_index - const.start_index != 3:
-        string = "There is a problem with the input function."
-        return errorUniversal(string, len_num)
     const.start_index, char = tool.forwordIndex(const.start_index)
     name = const.token.getValue(const.start_index)
     if name not in const.id:
@@ -125,4 +124,29 @@ def compileInput(len_num):
     elif type == "bool":
         val = tool.stringToBool(val)
     const.id[name][1] = val
+    const.start_index, char = tool.forwordIndex(const.start_index)
+    if char != ".":  # 由于要求指针最后指向.，需要检测.
+        return errorExpect(".", len_num)
+    return enums.OK
+
+
+def compileFind(len_num):
+    const.start_index, char = tool.forwordIndex(const.start_index)
+    if char != ":":
+        return errorExpect(":", len_num)
+    const.start_index, char = tool.forwordIndex(const.start_index)
+    string = base.strExpression(len_num)
+    if string:
+        result = tool.findData(string)
+        if result is None:
+            print("查无内容")
+        else:
+            print("----------------------")
+            for lens in result:
+                for char in lens:
+                    print(char, end=" ")
+                print("")
+            print("----------------------")
+    else:
+        return enums.ERROR
     return enums.OK

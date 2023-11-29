@@ -166,7 +166,9 @@ def findInvalidLogic(sequence):
 def calculateCompareExpression(sequence):
     if len(sequence) == 1:
         value = sequence[0]
-        if value != 0:
+        if value == "true" or value == "false":
+            return value
+        elif value != 0:
             return "true"
         else:
             return "false"
@@ -196,7 +198,11 @@ def findInvalidCompare(sequence):
     COMPARE = ["==", "<", ">", "<=", ">=", "!="]
     if len(sequence) == 1:
         value = sequence[0]
-        if isinstance(value, int) or isinstance(value, float):
+        if (
+            isinstance(value, int)
+            or isinstance(value, float)
+            or value == "false" or value == "true"
+        ):
             return None
         else:
             return 0
