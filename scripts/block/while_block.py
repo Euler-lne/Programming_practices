@@ -6,6 +6,15 @@ from block import base_statement as base
 
 
 def checkWhileBlockFront(len_num):
+    """检查while语句中的前半部分是否满足要求，返回后指针指向then的后一位
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        bool: 返回while语句中的循环变量是否为True
+    """
     index, char = tool.updateIndex()
     if char != "while":
         return errorExpect("while", len_num)
@@ -26,7 +35,16 @@ def checkWhileBlockFront(len_num):
 
 
 def divideWhileSwitchBlock(len_num, end):
-    """返回指向!后一个的指针，指针起始位置指向["if", "while", "switch"]"""
+    """定位while语句和switch语句的结束位置，返回指向!后一个的指针，指针起始位置指向["if", "while", "switch"]
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        integer: 返回while语句和switch语句的结束位置并返回
+    """
     stack = []  # 指针起始位置指向["if", "while", "switch"]所以不用向栈里面添加任何元素
     i = -1
     index, char = tool.updateIndex()

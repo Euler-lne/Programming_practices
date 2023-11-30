@@ -1,6 +1,12 @@
 def calculateExpression(tokens):
-    """
-    计算一个表达式的值，数字可以是字符串或者是数字
+    """计算一个表达式的值，数字可以是字符串或者是数字
+
+    Args:
+        tokens (list): 计算tokens中的算数表达式的值，
+        每个符号在tokens中单独以字符串的形式保存
+
+    Returns:
+        integer / float: 返回算数表达式的结果
     """
     precedence = {"+": 1, "-": 1, "*": 2, "/": 2}
     if (
@@ -61,8 +67,14 @@ def calculateExpression(tokens):
 
 
 def findInvalidAri(sequence):
-    """
-    检查表达式是否合理，合理则返回None，否则返回错误所在位置
+    """检查表达式是否合理，合理则返回None，否则返回错误所在位置
+
+    Args:
+        sequence (list): 算数表达式
+
+    Returns:
+        None: 代表为算数表达式 \n
+        integer: 代表出错位置
     """
     operators = set(["+", "-", "*", "/"])
     last_element = None
@@ -98,6 +110,15 @@ def findInvalidAri(sequence):
 
 
 def calculateLogicExpression(expression):
+    """计算一个表达式的值，数字可以是字符串或者是数字
+
+    Args:
+        expression (list): 计算expression中的逻辑表达式的值，
+        每个符号在expression中单独以字符串的形式保存
+
+    Returns:
+        bool: 返回逻辑表达式的结果
+    """
     operators = []  # 运算符堆栈
     values = []  # 值堆栈
     valid_values = {"true", "false"}
@@ -137,8 +158,14 @@ def calculateLogicExpression(expression):
 
 
 def findInvalidLogic(sequence):
-    """
-    检查逻辑表达式是否合法，合法则返回 None，否则返回第一个不合法的位置
+    """检查表达式是否合理，合理则返回None，否则返回错误所在位置
+
+    Args:
+        sequence (list): 逻辑表达式，只有true, false, and, or
+
+    Returns:
+        None: 代表为算数表达式 \n
+        integer: 代表出错位置
     """
     valid_values = {"true", "false"}
     valid_operators = {"and", "or"}
@@ -164,6 +191,14 @@ def findInvalidLogic(sequence):
 
 
 def calculateCompareExpression(sequence):
+    """计算比较逻辑的值，或者处理只有"true/false"的情况
+
+    Args:
+        sequence (list): 传入的是一个比较运算符，或者单个"true/false"
+
+    Returns:
+        str: 正确返回"true"，错误返回"false"
+    """
     if len(sequence) == 1:
         value = sequence[0]
         if value == "true" or value == "false":
@@ -195,13 +230,23 @@ def calculateCompareExpression(sequence):
 
 
 def findInvalidCompare(sequence):
+    """检测比较运算是否存在错误
+
+    Args:
+        sequence (list): 传入的是一个比较运算符，或者单个"true/false"
+
+    Returns:
+        None: 代表为算数表达式 \n
+        integer: 代表出错位置
+    """
     COMPARE = ["==", "<", ">", "<=", ">=", "!="]
     if len(sequence) == 1:
         value = sequence[0]
         if (
             isinstance(value, int)
             or isinstance(value, float)
-            or value == "false" or value == "true"
+            or value == "false"
+            or value == "true"
         ):
             return None
         else:
@@ -215,43 +260,3 @@ def findInvalidCompare(sequence):
         return None
     else:
         return 0
-
-
-"""
-tokens = ["2", "+", "4", "+", "3", "*", "5"]
-values = [2]
-tokens = [+]
-token = 4 
-
-values = [2, 4]
-tokens = [+]
-token = +
-
-token 入栈
-values = [2, 4]
-tokens = [+, +]
-
-运算符出栈
-右操作数出栈
-左操作数出栈
-values = []
-tokens = [+]
-
-计算后的值 6 入栈
-values = [6]
-tokens = [+]
-token = 3
-
-values = [6, 3]
-tokens = [+]
-token = *
-
-values = [6, 3]
-tokens = [+, *]
-token = 5
-
-values = [6, 3, 5]
-tokens = [+, *]
-
-逐个弹出计算
-"""

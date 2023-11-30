@@ -6,8 +6,14 @@ from block import base_statement as base
 
 
 def checkIfBlockFront(len_num):
-    """检查if语句的前半部分，也就是 若……，则
-    返回后的指针指向则的后一位
+    """检查if语句的前半部分，也就是 若……，则……返回后的指针指向then(则)的后一位
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        bool: 代表if后面逻辑的值
     """
     index, char = tool.updateIndex()
     if char != "if":
@@ -29,7 +35,17 @@ def checkIfBlockFront(len_num):
 
 
 def checkIfBlockEnd(len_num, mid, end):
-    """失败返回None，正确返回1"""
+    """判断IF语句后续是否完整，检测终end!/end;，返回后的指针不变。
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        mid (integer): if 语句块中else的位置，指向else，没有则mid == mid \n
+        end (integer): if 语句块终止的位置的下一位。IF语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表没有错误，IF语句块完整
+    """
     if mid != end:
         index, char = tool.getIndex(mid - 2)
         if char != "end":
@@ -47,10 +63,15 @@ def checkIfBlockEnd(len_num, mid, end):
 
 
 def divideIfBlock(len_num, end):
-    """
-    将if 块划分为两块，或者一块，也就是寻找转跳下标。
-    这里的if 和 ！一定可以匹配因为，词法分析已经匹配过了
-    返回i,j i指向了else 或者!后一位，j指向!后一位
+    """将if 块划分为两块，或者一块，也就是寻找转跳下标。
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        end (integer): if 语句块终止的位置的下一位。IF语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        (integer, integer): 第一位代表else的位置，第二位代表IF语句块结束后，下一个语句的起始位置。
     """
     stack = ["if"]  # 指针已经跳过了if 所以把if添加到栈底
     i = -1

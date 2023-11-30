@@ -9,7 +9,22 @@ from block import normal_block as Bnormal
 
 
 def runBlock(len_num, end):
-    """结束后指向下一个新的代码块"""
+    """运行if, while, switch代码块，返回后的指针指向下一个待执行的代码块
+
+    Args:
+        Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        其他：代表块执行成功，由于这里需要执行if, while, switch以及普通语句，所以返回值类型比较多
+            普通语句：
+                若为赋值语句，返回赋值语句返回的值 \n
+                若不为赋值语句则返回1 \n
+            其他语句，则是使用了递归调用进行语句块的执行。
+
+    """
     if const.start_index == end:  # 递归结束条件
         return enums.OK
     off = 0
@@ -36,18 +51,23 @@ def runBlock(len_num, end):
         else:
             val = Bnormal.normalBlock(len_num)  # 执行完成之后会指向.
             off = 1
-    return forwordBlock(len_num, val, end, off)
-
-
-def forwordBlock(len_num, val, end, off=0):
-    if val is not None:
-        const.start_index += off  # 跳过.
-        return runBlock(len_num, end)
-    else:
-        return val
+    if val is None:
+        return enums.ERROR
+    const.start_index += off  # 跳过.
+    return runBlock(len_num, end)
 
 
 def ifBlock(len_num, end):
+    """if语句初步执行，执行到，用于判断需if条件是否成立，然后执行相应代码
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表执行语句成功
+    """
     val = Bif.checkIfBlockFront(len_num)  # 指针指向了then的后一位
     result = Bif.divideIfBlock(len_num, end)  # 这里指针已经跳过了if
     if val is None or result is None:
@@ -56,7 +76,18 @@ def ifBlock(len_num, end):
 
 
 def runIfBlock(len_num, val, mid, end):
-    """执行if块语句，能够进入到这里的都是代表能够在词法分析分块的。end要指向下一条要执行的语句"""
+    """执行if块语句
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        val (bool): if条件是否成立 \n
+        mid (integer): 指向else的位置，如果没有其值和end一样 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表执行语句成功
+    """
     if Bif.checkIfBlockEnd(len_num, mid, end) is None:
         return enums.ERROR
     if val:  # val 为 True  或者是 False
@@ -75,6 +106,16 @@ def runIfBlock(len_num, val, mid, end):
 
 
 def whileBlock(len_num, end):
+    """执行while块语句
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表执行语句成功
+    """
     start = const.start_index
     val = Bwhile.checkWhileBlockFront(len_num)
     if val is None:
@@ -91,6 +132,16 @@ def whileBlock(len_num, end):
 
 
 def switchBlock(len_num, end):
+    """执行switch块语句
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表执行语句成功
+    """
     name = Bswitch.checkSwitchBlockFront(len_num)
     if name is None:
         return enums.ERROR
@@ -103,6 +154,17 @@ def switchBlock(len_num, end):
 
 
 def findRightPositon(len_num, name, end):
+    """找到合适的位置，然后执行语句
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        name (string): 为switch语句中的变量的名字 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表执行语句成功
+    """
     index, char = tool.updateIndex()
     while index < end:
         if char == "case":  # 检测case
@@ -120,14 +182,23 @@ def findRightPositon(len_num, name, end):
             break
         elif char == "switch":  # 需要跳过switch 语句
             index = Bwhile.divideWhileSwitchBlock(len_num, end) - 1  # 指向！就好了
-            char = const.token.getType(index) # 更新字符
+            char = const.token.getType(index)  # 更新字符
             continue
         index, char = tool.forwordIndex(index)
     return enums.OK
 
 
 def checkBlockEnd(len_num, end):
-    """检查代码块结束的合法性，合法返回1，不合法返回None。开始指针不移动"""
+    """检查代码块结束的合法性。开始指针不移动
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表执行语句成功
+    """
     index, char = tool.getIndex(end - 2)
     if char != "end":
         return errorExpect("end", len_num)

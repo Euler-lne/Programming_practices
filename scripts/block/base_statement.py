@@ -6,11 +6,15 @@ from tools import tool_self as tool
 
 
 def ariExpression(len_num, print_error=True):
-    """
-    检查算数表达式，并计算表达式中的值
-    传入的值用来进行对某些打印类型是否输出的判断，应为布尔值的判断可能会用到
-    返回算数表达式的值，错误返回None
-    结束后指针指向ARIEXP
+    """检查算数表达式，并计算表达式中的值，结束时指针指向["==", "and", "or", "<", ">", "<=", ">=", "!=", ",", "."]
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        print_error (bool, optional): 用于控制错误是否输出，因为有时候会调用这个函数检测某个式子是否为算术表达式. Defaults to True.
+
+    Returns:
+        None: 代表检测到错误 \n
+        integer / flaot: 这个算数表达式计算后的值
     """
     index = const.start_index
     char = const.token.getType(index)
@@ -60,9 +64,14 @@ def ariExpression(len_num, print_error=True):
 
 
 def strExpression(len_num):
-    """
-    检查字符串表达式，并计算表达式中的值
-    返回字符串表达式的值，错误返回None
+    """检查字符串表达式，并计算字符串表达式中的值，结束后指针指向[",", "."]
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误\n
+        string: 字符串表达式返回字符串的值
     """
     index = const.start_index
     char = const.token.getType(index)
@@ -108,10 +117,14 @@ def strExpression(len_num):
 
 
 def logicExpression(len_num):
-    """
-    检查逻辑表达式，并计算表达式中的值
-    返回逻辑表达式的值True/False，错误返回None
-    结束后指针指向, 或者 .
+    """检查逻辑表达式，并计算表达式中的值，结束后指针指向[",", "."]
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        bool: 这个逻辑表达式返回的布尔值
     """
     index = const.start_index
     char = const.token.getType(index)
@@ -176,9 +189,16 @@ def logicExpression(len_num):
 
 
 def assignment1(len_num):
-    """
-    进行类似于 苹果为苹果加3 的赋值运算
-    结束的时候指针指向。
+    """第一种赋值语句，进行类似于 苹果为苹果加3 的赋值运算，结束后指针指向[",", "."]
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 出现错误 \n
+        integer / float: 算数表达式被赋予的值 \n
+        string: 字符串表达式被赋予的值 \n
+        bool: 逻辑表达式被赋予的值
     """
     index, char = tool.updateIndex()
     if char == "id":  # 检测是否为id
@@ -207,9 +227,16 @@ def assignment1(len_num):
 
 
 def assignment2(len_num, print_error=True):
-    """
-    进行类似于 苹果加3也 的赋值运算
-    结束的时候指针指向=_，返回"NO"代表不是第二种赋值方式
+    """第二种赋值语句，进行类似于 苹果加3也 的赋值运算，结束后指针指向"=_"
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        print_error (bool, optional): 用于控制错误是否输出，因为有时候会调用这个函数检测某个式子是否为第二种赋值语句. Defaults to True.
+
+    Returns:
+        None: 代表检测到错误 \n
+        "NO": 代表不是第二类赋值语句 \n
+        integer / flaot: 其他则进行检测算数运算符操作，并计返回算最终变量应该有的值/None
     """
     index, char = tool.updateIndex()
     while char and char != "=_" and char not in const.STREXP:
@@ -233,8 +260,15 @@ def assignment2(len_num, print_error=True):
 
 
 def assignReadOperator(len_num, name):
-    """
-    进行检测运算符操作
+    """进行检测算数运算符操作
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        name (string): 传入变量的的名字，用于对变量进行赋值
+
+    Returns:
+        None : None代表检测到错误 \n
+        integer / flaot: 其他则进行检测被操作数字操作，并计返回算最终变量应该有的值/None
     """
     index, char = tool.updateIndex()
     if char in ["+", "-", "*", "/"]:
@@ -246,6 +280,16 @@ def assignReadOperator(len_num, name):
 
 
 def assignReadAri(len_num, name, operator):
+    """进行检测算数运算符操作
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        name (string): 传入变量的的名字，用于对变量进行赋值 \n
+        operator (char): 操作符号的类型["+", "-", "*", "/"]
+    Returns:
+        None: 代表检测到错误 \n
+        integer / flaot: 这个算数表达式计算后的值
+    """
     val = ariExpression(len_num, False)
     index, char = tool.updateIndex()
     if val is None:
@@ -257,6 +301,16 @@ def assignReadAri(len_num, name, operator):
 
 
 def calculate(name, operator, val):
+    """第二类赋值语句的算术表达式的值
+
+    Args:
+        name (string): 传入变量的的名字，用于对变量进行赋值 \n
+        operator (char): 操作符号的类型["+", "-", "*", "/"] \n
+        val (integer/float): 需要和变量名为name的变量进行预算操作的数值 \n
+
+    Returns:
+        integer / flaot: 这个算数表达式计算后的值
+    """
     if operator == "+":
         const.id[name][1] += val
     elif operator == "-":

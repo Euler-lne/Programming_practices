@@ -6,7 +6,17 @@ from block import base_statement as base
 
 
 def normalBlock(len_num):
-    """如果正常执行，那么将会执行到."""
+    """运行除了if, while, switch之外的代码块，这种代码都是以.结尾的，返回后的指针指向.
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        其他：代表普通语句块执行成功 \n
+            若为赋值语句，返回赋值语句返回的值 \n
+            若不为赋值语句则返回1 \n
+    """
     index = const.start_index
     type = const.token.getType(index)
     if type == "float" or type == "string" or type == "bool":
@@ -41,10 +51,14 @@ def normalBlock(len_num):
 
 
 def declareVar(len_num):
-    """ "
-    声明变量语句
-    只有type类型正确才会进入，type的错误被隔离在函数之外
-    type == "float" or type == "string" or type == "bool"
+    """声明变量语句，返回后的指针指向.
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表语句执行成功。
     """
     index = const.start_index
     type = const.token.getType(index)  # 记录当前的变量类型
@@ -90,6 +104,15 @@ def declareVar(len_num):
 
 
 def compilePrint(len_num):
+    """执行输出函数，返回后的指针指向.
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表语句执行成功。
+    """
     const.start_index, char = tool.forwordIndex(const.start_index)
     if char != ":":
         return errorExpect(":", len_num)
@@ -103,6 +126,15 @@ def compilePrint(len_num):
 
 
 def compileInput(len_num):
+    """执行输入函数，返回后的指针指向.
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表语句执行成功。
+    """
     const.start_index, char = tool.forwordIndex(const.start_index)
     if char != ":":
         return errorExpect(":", len_num)
@@ -131,6 +163,15 @@ def compileInput(len_num):
 
 
 def compileFind(len_num):
+    """执行查找函数，返回后的指针指向.
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        1: 代表语句执行成功。
+    """
     const.start_index, char = tool.forwordIndex(const.start_index)
     if char != ":":
         return errorExpect(":", len_num)

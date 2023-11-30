@@ -4,10 +4,7 @@ from tools import const
 
 
 class Read:
-    """
-    读取文件类，词法分析边读边生成Token，以一个语法块为一个单位。
-    然后返回给compile
-    """
+    """读取文件类，词法分析边读边生成Token，以一个语法块为一个单位。"""
 
     def __init__(self, path, encodeing="utf-8"):
         self.path = path  # 文件路径
@@ -23,10 +20,12 @@ class Read:
         self.file = open(self.path, "r", encoding=self.encodeing)
 
     def readBlock(self):
-        """
-        读取文件，边读边生成Token，保存到const.token中。
+        """读取文件，边读边生成Token，保存到const.token中。
         每次读取到逗号，如果有分支或者循环读取到相应的分支或者循环的终！
-        返回enums.ERROR代表出现了词法错误。
+
+        Returns:
+            None: 代表检测到错误 \n
+            其他: 代表执行语句成功，对应相应的代码状态
         """
         len = const.token.getLen()
         while True:
@@ -52,8 +51,14 @@ class Read:
             len = const.token.getLen()
 
     def checkChar(self, char):
-        """
-        检查相关的字符，然后加入到Token中
+        """检查相关的字符，然后加入到Token中
+
+        Args:
+            char (char): 读取到的字符
+
+        Returns:
+            None: 代表检测到错误 \n
+            1: 代表执行语句成功
         """
         if char == "#":
             self.is_conmment = True
@@ -213,11 +218,13 @@ class Read:
         return enums.OK
 
     def checkID(self, is_swap=True):
-        """
-        作用：检查是否为ID，由于ID没有特定的标识，
+        """检查是否为ID，由于ID没有特定的标识，
         所以不为buildToken中的所有汉字都有可能为ID。
-        在两个能匹配项之间的汉字记为ID，能匹配指的是处于const.token.md的
+        在两个能匹配项之间的汉字记为ID，能匹配指的是处于const.token的
         当buildToken检测匹配时才调用这个函数进行添加ID
+
+        Args:
+            is_swap (bool, optional): 用于判断Token是否要交换位置. Defaults to True.
         """
         if self.temp_id != "":
             const.token.addToken("id", self.temp_id)
@@ -226,8 +233,14 @@ class Read:
                 const.token.swapToken()
 
     def buildToken(self, char):
-        """
-        创建Token
+        """创建Token
+
+        Args:
+            char (char): 读取到的字符
+
+        Returns:
+            None: 代表检测到错误 \n
+            1: 代表执行语句成功
         """
         if self.is_conmment or self.is_string:
             if self.is_conmment:  # 注释状态
@@ -242,8 +255,12 @@ class Read:
         return enums.OK
 
     def saveToken(self, path="./log/token", encoding="utf-8", col=5):
-        """
-        将Token 保存到指定路径，指定编码，指定列数
+        """将Token 保存到指定路径，指定编码，指定列数
+
+        Args:
+            path (str, optional): 保存路径. Defaults to "./log/token".
+            encoding (str, optional): 中文编码. Defaults to "utf-8".
+            col (int, optional): 行数. Defaults to 5.
         """
         if const.token.getLen() == 0:
             print("Token is empety!")
@@ -260,8 +277,10 @@ class Read:
                         f.write("\n")
 
     def checkString(self, char):
-        """
-        完成字符串检查，通过控制栈来实现
+        """完成字符串检查，通过控制栈来实现
+
+        Args:
+            char (char): 读取到的字符
         """
         if char == "“":  # “入栈
             self.stack1.append(char)
@@ -280,10 +299,13 @@ class Read:
             self.string += char
 
     def divideToken(self):
-        """
-        将现有的Token划分未块，起到一个检测块边界的问题
+        """将现有的Token划分未块，起到一个检测块边界的问题
         由于id 采用特殊的匹配方式，如果没有匹配到id那么Token不会增长，导致if会多次入栈。
         所以，divideToken函数之后在Token改变了才调用
+
+        Returns:
+           None: 代表检测到错误 \n
+            1: 代表执行语句成功
         """
         if self.senten_state == enums.NONE:
             if const.token.getEndType() == ".":  # 最后一个元素是"."说明这个一语句

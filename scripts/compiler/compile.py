@@ -6,11 +6,12 @@ from tools.calculate_expression import *
 from tools import const
 from tools.error import *
 
+
 class Compiler(read.Read):
-    """
-    用于词法分析，解析目标代码
-    主要有4个状态：普通语句，IF语句，WHILE语句，SWITCH语句，这四个状态通过readBlock返回得知
-    其中普通语句又有：赋值语句，声明语句，print语句，
+    """用于词法分析，解析目标代码，采用扫描一遍的形式
+
+    Args:
+        read (class): 用于词法分析
     """
 
     def __init__(self, path, encodeing="utf-8"):

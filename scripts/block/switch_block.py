@@ -6,7 +6,15 @@ from block import base_statement as base
 
 
 def checkSwitchBlockFront(len_num):
-    """指针指向了:后方，正确返回变量名字，错误返回None"""
+    """指针指向了:后方，正确返回变量名字，错误返回None
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        None: 代表检测到错误 \n
+        string: 返回switch语句中的变量名字
+    """
     index, char = tool.updateIndex()
     if char != "id":
         return errorExpect("id", len_num)
@@ -28,7 +36,16 @@ def checkSwitchBlockFront(len_num):
 
 
 def checkSwitchBranch(len_num, name):
-    """检查每一个分支语句的前半部分是否满足要求，退出后指针指向then后一位"""
+    """检查每一个分支语句的前半部分是否满足要求，退出后指针指向then后一位
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理 \n
+        name (string): 为switch语句中的变量的名字
+
+    Returns:
+        None: 代表检测到错误 \n
+        bool: 返回switch语句中的变量特定case对应的值是否等于switch中的变量名字
+    """
     index, char = tool.updateIndex()
     if char != "case":
         return errorExpect("case", len_num)
