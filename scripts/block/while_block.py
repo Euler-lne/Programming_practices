@@ -12,8 +12,8 @@ def checkWhileBlockFront(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        bool: 返回while语句中的循环变量是否为True
+        * None 代表检测到错误
+        * bool 返回while语句中的循环变量是否为True
     """
     index, char = tool.updateIndex()
     if char != "while":
@@ -42,8 +42,8 @@ def divideWhileSwitchBlock(len_num, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        integer: 返回while语句和switch语句的结束位置并返回
+        * None 代表检测到错误
+        * integer 返回while语句和switch语句的结束位置并返回
     """
     stack = []  # 指针起始位置指向["if", "while", "switch"]所以不用向栈里面添加任何元素
     i = -1

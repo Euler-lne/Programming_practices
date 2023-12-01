@@ -12,10 +12,10 @@ def normalBlock(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        其他：代表普通语句块执行成功 \n
-            若为赋值语句，返回赋值语句返回的值 \n
-            若不为赋值语句则返回1 \n
+        * None 代表检测到错误
+        * 其他 代表普通语句块执行成功
+            * 若为赋值语句，返回赋值语句返回的值
+            * 若不为赋值语句则返回1
     """
     index = const.start_index
     type = const.token.getType(index)
@@ -57,8 +57,8 @@ def declareVar(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表语句执行成功。
+        * None 代表检测到错误
+        * 1 代表语句执行成功。
     """
     index = const.start_index
     type = const.token.getType(index)  # 记录当前的变量类型
@@ -110,8 +110,8 @@ def compilePrint(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表语句执行成功。
+        * None 代表检测到错误
+        * 1 代表语句执行成功。
     """
     const.start_index, char = tool.forwordIndex(const.start_index)
     if char != ":":
@@ -132,8 +132,8 @@ def compileInput(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表语句执行成功。
+        * None 代表检测到错误
+        * 1 代表语句执行成功。
     """
     const.start_index, char = tool.forwordIndex(const.start_index)
     if char != ":":
@@ -169,8 +169,8 @@ def compileFind(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表语句执行成功。
+        * None 代表检测到错误
+        * 1 代表语句执行成功。
     """
     const.start_index, char = tool.forwordIndex(const.start_index)
     if char != ":":

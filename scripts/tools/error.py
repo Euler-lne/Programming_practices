@@ -9,7 +9,7 @@ def errorUniversal(char, len_num):
         len_num (integer): 错误出现的行
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     string = char
     string += " The error near the line " + str(len_num) + "."
@@ -26,7 +26,7 @@ def errorUndefine(name, len_num, is_print=True):
         is_print (bool, optional): 是否打印错误信息. Defaults to True.
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     if is_print:
         string = name + " have not been statement. "
@@ -44,7 +44,7 @@ def errorUninit(name, len_num, is_print=True):
         is_print (bool, optional): 是否打印错误信息. Defaults to True.
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     if is_print:
         string = name + " is not initialized. "
@@ -62,7 +62,7 @@ def errorInit(name, len_num, is_print=True):
         is_print (bool, optional): 是否打印错误信息. Defaults to True.
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     if is_print:
         string = name + " had been initialized. "
@@ -80,7 +80,7 @@ def errorUnexpectChar(char, len_num, is_print=True):
         is_print (bool, optional): 是否打印错误信息. Defaults to True.
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     if is_print:
         string = "Unexpected char of " + char
@@ -100,7 +100,7 @@ def errorUnexpectType(type_error, type_exp, len_num, is_print=True):
         is_print (bool, optional): 是否打印错误信息. Defaults to True.
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     if is_print:
         string = "Unexpected type. You should use "
@@ -121,7 +121,7 @@ def errorExpect(char, len_num, is_print=True):
         is_print (bool, optional): 是否打印错误信息. Defaults to True.
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     if is_print:
         string = "Expected " + char
@@ -138,7 +138,7 @@ def errorUnhelpfulStatement(len_num):
         len_num (integer): 错误出现的行
 
     Returns:
-        None: 代表出现错误
+        * None 代表出现错误
     """
     string = (
         "Note that we detect that the script you wrote has an unhelpful statement, "

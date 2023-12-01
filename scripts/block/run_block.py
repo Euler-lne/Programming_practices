@@ -17,12 +17,12 @@ def runBlock(len_num, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        其他：代表块执行成功，由于这里需要执行if, while, switch以及普通语句，所以返回值类型比较多
-            普通语句：
-                若为赋值语句，返回赋值语句返回的值 \n
-                若不为赋值语句则返回1 \n
-            其他语句，则是使用了递归调用进行语句块的执行。
+        * None 代表检测到错误
+        * 其他 代表块执行成功，由于这里需要执行if, while, switch以及普通语句，所以返回值类型比较多
+            * 普通语句
+                * 若为赋值语句，返回赋值语句返回的值
+                * 若不为赋值语句则返回1
+            * 其他语句，则是使用了递归调用进行语句块的执行。
 
     """
     if const.start_index == end:  # 递归结束条件
@@ -65,8 +65,8 @@ def ifBlock(len_num, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表执行语句成功
+        * None 代表检测到错误
+        * 1 代表执行语句成功
     """
     val = Bif.checkIfBlockFront(len_num)  # 指针指向了then的后一位
     result = Bif.divideIfBlock(len_num, end)  # 这里指针已经跳过了if
@@ -85,8 +85,8 @@ def runIfBlock(len_num, val, mid, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表执行语句成功
+        * None 代表检测到错误
+        * 1 代表执行语句成功
     """
     if Bif.checkIfBlockEnd(len_num, mid, end) is None:
         return enums.ERROR
@@ -113,8 +113,8 @@ def whileBlock(len_num, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表执行语句成功
+        * None 代表检测到错误
+        * 1 代表执行语句成功
     """
     start = const.start_index
     val = Bwhile.checkWhileBlockFront(len_num)
@@ -139,8 +139,8 @@ def switchBlock(len_num, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表执行语句成功
+        * None 代表检测到错误
+        * 1 代表执行语句成功
     """
     name = Bswitch.checkSwitchBlockFront(len_num)
     if name is None:
@@ -162,8 +162,8 @@ def findRightPositon(len_num, name, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表执行语句成功
+        * None 代表检测到错误
+        * 1 代表执行语句成功
     """
     index, char = tool.updateIndex()
     while index < end:
@@ -196,8 +196,8 @@ def checkBlockEnd(len_num, end):
         end (integer): 语句块终止的位置的下一位。语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表执行语句成功
+        * None 代表检测到错误
+        * 1 代表执行语句成功
     """
     index, char = tool.getIndex(end - 2)
     if char != "end":

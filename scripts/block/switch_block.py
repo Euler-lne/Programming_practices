@@ -12,8 +12,8 @@ def checkSwitchBlockFront(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        string: 返回switch语句中的变量名字
+        * None 代表检测到错误
+        * string 返回switch语句中的变量名字
     """
     index, char = tool.updateIndex()
     if char != "id":
@@ -43,8 +43,8 @@ def checkSwitchBranch(len_num, name):
         name (string): 为switch语句中的变量的名字
 
     Returns:
-        None: 代表检测到错误 \n
-        bool: 返回switch语句中的变量特定case对应的值是否等于switch中的变量名字
+        * None 代表检测到错误
+        * bool 返回switch语句中的变量特定case对应的值是否等于switch中的变量名字
     """
     index, char = tool.updateIndex()
     if char != "case":

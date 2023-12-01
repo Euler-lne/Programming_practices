@@ -15,11 +15,23 @@ class Compiler(read.Read):
     """
 
     def __init__(self, path, encodeing="utf-8"):
+        """类初始化
+
+        Args:
+            path (string): 文件路径
+            encodeing (str, optional): 编码. Defaults to "utf-8".
+        """
         super().__init__(path, encodeing)
         self.state = enums.NONE  # 当前的语句状态
         self.start()
 
     def start(self):
+        """执行编译器
+
+        Returns:
+            * None 代表检测到错误
+            * 10 代表执行结束
+        """
         while True:
             self.state = self.readBlock()
             # 进行可能的错误检测
@@ -42,6 +54,6 @@ class Compiler(read.Read):
             elif self.state == enums.WHILE:  # while 代码块
                 val = B.whileBlock(self.len_num, const.end_index)
             if val is None:
-                return enums.NONE
+                return enums.ERROR
 
             const.start_index = const.token.len  # 准备读取下一个代码块

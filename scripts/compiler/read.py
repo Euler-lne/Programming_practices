@@ -7,6 +7,12 @@ class Read:
     """读取文件类，词法分析边读边生成Token，以一个语法块为一个单位。"""
 
     def __init__(self, path, encodeing="utf-8"):
+        """类初始化
+
+        Args:
+            path (string): 文件路径
+            encodeing (str, optional): 编码. Defaults to "utf-8".
+        """
         self.path = path  # 文件路径
         self.encodeing = encodeing  # 编码
         self.temp_id = ""  # 用于记录当前不为关键字的汉字
@@ -24,8 +30,8 @@ class Read:
         每次读取到逗号，如果有分支或者循环读取到相应的分支或者循环的终！
 
         Returns:
-            None: 代表检测到错误 \n
-            其他: 代表执行语句成功，对应相应的代码状态
+            * None 代表检测到错误
+            * 其他 代表执行语句成功，对应相应的代码状态
         """
         len = const.token.getLen()
         while True:
@@ -57,8 +63,8 @@ class Read:
             char (char): 读取到的字符
 
         Returns:
-            None: 代表检测到错误 \n
-            1: 代表执行语句成功
+            * None 代表检测到错误
+            * 1 代表执行语句成功
         """
         if char == "#":
             self.is_conmment = True
@@ -239,8 +245,8 @@ class Read:
             char (char): 读取到的字符
 
         Returns:
-            None: 代表检测到错误 \n
-            1: 代表执行语句成功
+            * None 代表检测到错误
+            * 1 代表执行语句成功
         """
         if self.is_conmment or self.is_string:
             if self.is_conmment:  # 注释状态
@@ -304,8 +310,8 @@ class Read:
         所以，divideToken函数之后在Token改变了才调用
 
         Returns:
-           None: 代表检测到错误 \n
-            1: 代表执行语句成功
+            * None 代表检测到错误
+            * 1 代表执行语句成功
         """
         if self.senten_state == enums.NONE:
             if const.token.getEndType() == ".":  # 最后一个元素是"."说明这个一语句

@@ -12,8 +12,8 @@ def checkIfBlockFront(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        bool: 代表if后面逻辑的值
+        * None 代表检测到错误
+        * bool 代表if后面逻辑的值
     """
     index, char = tool.updateIndex()
     if char != "if":
@@ -43,8 +43,8 @@ def checkIfBlockEnd(len_num, mid, end):
         end (integer): if 语句块终止的位置的下一位。IF语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        1: 代表没有错误，IF语句块完整
+        * None 代表检测到错误
+        * 1 代表没有错误，IF语句块完整
     """
     if mid != end:
         index, char = tool.getIndex(mid - 2)
@@ -70,8 +70,8 @@ def divideIfBlock(len_num, end):
         end (integer): if 语句块终止的位置的下一位。IF语句块结束后，下一个语句的起始位置。
 
     Returns:
-        None: 代表检测到错误 \n
-        (integer, integer): 第一位代表else的位置，第二位代表IF语句块结束后，下一个语句的起始位置。
+        * None 代表检测到错误
+        * (integer, integer) 第一位代表else的位置，第二位代表IF语句块结束后，下一个语句的起始位置。
     """
     stack = ["if"]  # 指针已经跳过了if 所以把if添加到栈底
     i = -1

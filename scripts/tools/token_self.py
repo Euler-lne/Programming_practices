@@ -2,15 +2,15 @@ class Token:
     """Token 类用于对Token进行一些操作"""
 
     def __init__(self):
+        """Token类初始化"""
         self.token = []
         self.len = 0
-        pass
 
     def getLen(self):
         """获取Token长度
 
         Returns:
-            integer: 返回现在的Token长度
+            * integer 返回现在的Token长度
         """
         return self.len
 
@@ -28,8 +28,8 @@ class Token:
         """获取最后一个token的类型
 
         Returns:
-            None: Token中没有元素
-            (string, string): 返回最后一个token的类型
+            * None Token中没有元素
+            * (string, string) 返回最后一个token的类型
         """
         if self.len != 0:
             return self.token[self.len - 1][0]
@@ -43,8 +43,8 @@ class Token:
             index (integer): 下标
 
         Returns:
-            None: Token中没有元素
-            string: 返回指定下标的token的类型
+            * None Token中没有元素
+            * string 返回指定下标的token的类型
         """
         if index < self.len:
             return self.token[index][0]
@@ -58,8 +58,8 @@ class Token:
             index (integer): 下标
 
         Returns:
-            None: Token中没有元素
-            string: 返回指定下标的token的值
+            * None Token中没有元素
+            * string 返回指定下标的token的值
         """
         if index < self.len:
             return self.token[index][1]

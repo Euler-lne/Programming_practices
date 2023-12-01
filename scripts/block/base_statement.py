@@ -13,8 +13,8 @@ def ariExpression(len_num, print_error=True):
         print_error (bool, optional): 用于控制错误是否输出，因为有时候会调用这个函数检测某个式子是否为算术表达式. Defaults to True.
 
     Returns:
-        None: 代表检测到错误 \n
-        integer / flaot: 这个算数表达式计算后的值
+        * None 代表检测到错误
+        * integer / flaot 这个算数表达式计算后的值
     """
     index = const.start_index
     char = const.token.getType(index)
@@ -70,8 +70,8 @@ def strExpression(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误\n
-        string: 字符串表达式返回字符串的值
+        * None 代表检测到错误
+        * string 字符串表达式返回字符串的值
     """
     index = const.start_index
     char = const.token.getType(index)
@@ -123,8 +123,8 @@ def logicExpression(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 代表检测到错误 \n
-        bool: 这个逻辑表达式返回的布尔值
+        * None 代表检测到错误
+        * bool 这个逻辑表达式返回的布尔值
     """
     index = const.start_index
     char = const.token.getType(index)
@@ -195,10 +195,10 @@ def assignment1(len_num):
         len_num (integer): 现在读取到哪一行，用于进行报错处理
 
     Returns:
-        None: 出现错误 \n
-        integer / float: 算数表达式被赋予的值 \n
-        string: 字符串表达式被赋予的值 \n
-        bool: 逻辑表达式被赋予的值
+        * None 出现错误
+        * integer / float 算数表达式被赋予的值
+        * string 字符串表达式被赋予的值
+        * bool 逻辑表达式被赋予的值
     """
     index, char = tool.updateIndex()
     if char == "id":  # 检测是否为id
@@ -234,9 +234,9 @@ def assignment2(len_num, print_error=True):
         print_error (bool, optional): 用于控制错误是否输出，因为有时候会调用这个函数检测某个式子是否为第二种赋值语句. Defaults to True.
 
     Returns:
-        None: 代表检测到错误 \n
-        "NO": 代表不是第二类赋值语句 \n
-        integer / flaot: 其他则进行检测算数运算符操作，并计返回算最终变量应该有的值/None
+        * None 代表检测到错误
+        * "NO" 代表不是第二类赋值语句
+        * integer / flaot 其他则进行检测算数运算符操作，并计返回算最终变量应该有的值/None
     """
     index, char = tool.updateIndex()
     while char and char != "=_" and char not in const.STREXP:
@@ -267,8 +267,8 @@ def assignReadOperator(len_num, name):
         name (string): 传入变量的的名字，用于对变量进行赋值
 
     Returns:
-        None : None代表检测到错误 \n
-        integer / flaot: 其他则进行检测被操作数字操作，并计返回算最终变量应该有的值/None
+        * None 代表检测到错误
+        * integer / flaot 其他则进行检测被操作数字操作，并计返回算最终变量应该有的值/None
     """
     index, char = tool.updateIndex()
     if char in ["+", "-", "*", "/"]:
@@ -287,8 +287,8 @@ def assignReadAri(len_num, name, operator):
         name (string): 传入变量的的名字，用于对变量进行赋值 \n
         operator (char): 操作符号的类型["+", "-", "*", "/"]
     Returns:
-        None: 代表检测到错误 \n
-        integer / flaot: 这个算数表达式计算后的值
+        * None 代表检测到错误
+        * integer / flaot 这个算数表达式计算后的值
     """
     val = ariExpression(len_num, False)
     index, char = tool.updateIndex()
@@ -309,7 +309,7 @@ def calculate(name, operator, val):
         val (integer/float): 需要和变量名为name的变量进行预算操作的数值 \n
 
     Returns:
-        integer / flaot: 这个算数表达式计算后的值
+        * integer / flaot 这个算数表达式计算后的值
     """
     if operator == "+":
         const.id[name][1] += val
