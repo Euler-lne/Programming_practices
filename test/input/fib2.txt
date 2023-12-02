@@ -1,0 +1,3 @@
+utf-8
+D:\Work\Program\Course\Programming practices\Final work\data\fib.txt
+0

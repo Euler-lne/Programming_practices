@@ -1,0 +1,7 @@
+compile module
+==============
+
+.. automodule:: compile
+   :members:
+   :undoc-members:
+   :show-inheritance:

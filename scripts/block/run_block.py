@@ -173,7 +173,8 @@ def findRightPositon(len_num, name, end):
             if match is None:
                 return enums.ERROR
             if match:  # 如果两个值相等了，就退出
-                runBlock(len_num, end)  # 开始指针指向了正确位置
+                if runBlock(len_num, end) is None:
+                    return enums.ERROR  
                 break
         elif char == "else":  # 检测else
             index, char = tool.forwordIndex(index)

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>base_statement module &#8212; 之乎者也 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=f115507d"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-base_statement">
+<span id="base-statement-module"></span><h1>base_statement module<a class="headerlink" href="#module-base_statement" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.ariExpression">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">ariExpression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.ariExpression" title="Link to this definition">¶</a></dt>
+<dd><p>检查算数表达式，并计算表达式中的值，结束时指针指向[“==”, “and”, “or”, “&lt;”, “&gt;”, “&lt;=”, “&gt;=”, “!=”, “,”, “.”]</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p></li>
+<li><p><strong>print_error</strong> (<em>bool</em><em>, </em><em>optional</em>) – 用于控制错误是否输出，因为有时候会调用这个函数检测某个式子是否为算术表达式. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>integer / flaot 这个算数表达式计算后的值</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.assignReadAri">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">assignReadAri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.assignReadAri" title="Link to this definition">¶</a></dt>
+<dd><p>进行检测算数运算符操作</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – 传入变量的的名字，用于对变量进行赋值</p></li>
+<li><p><strong>operator</strong> (<em>char</em>) – 操作符号的类型[“+”, “-”, “*”, “/”]</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>integer / flaot 这个算数表达式计算后的值</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.assignReadOperator">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">assignReadOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.assignReadOperator" title="Link to this definition">¶</a></dt>
+<dd><p>进行检测算数运算符操作</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p></li>
+<li><p><strong>name</strong> (<em>string</em>) – 传入变量的的名字，用于对变量进行赋值</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>integer / flaot 其他则进行检测被操作数字操作，并计返回算最终变量应该有的值/None</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.assignment1">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">assignment1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.assignment1" title="Link to this definition">¶</a></dt>
+<dd><p>第一种赋值语句，进行类似于 苹果为苹果加3 的赋值运算，结束后指针指向[“,”, “.”]</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 出现错误</p></li>
+<li><p>integer / float 算数表达式被赋予的值</p></li>
+<li><p>string 字符串表达式被赋予的值</p></li>
+<li><p>bool 逻辑表达式被赋予的值</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.assignment2">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">assignment2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.assignment2" title="Link to this definition">¶</a></dt>
+<dd><p>第二种赋值语句，进行类似于 苹果加3也 的赋值运算，结束后指针指向”=_”</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p></li>
+<li><p><strong>print_error</strong> (<em>bool</em><em>, </em><em>optional</em>) – 用于控制错误是否输出，因为有时候会调用这个函数检测某个式子是否为第二种赋值语句. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>”NO” 代表不是第二类赋值语句</p></li>
+<li><p>integer / flaot 其他则进行检测算数运算符操作，并计返回算最终变量应该有的值/None</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.calculate">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.calculate" title="Link to this definition">¶</a></dt>
+<dd><p>第二类赋值语句的算术表达式的值</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>string</em>) – 传入变量的的名字，用于对变量进行赋值</p></li>
+<li><p><strong>operator</strong> (<em>char</em>) – 操作符号的类型[“+”, “-”, “*”, “/”]</p></li>
+<li><p><strong>val</strong> (<em>integer/float</em>) – 需要和变量名为name的变量进行预算操作的数值</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>integer / flaot 这个算数表达式计算后的值</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.logicExpression">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">logicExpression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.logicExpression" title="Link to this definition">¶</a></dt>
+<dd><p>检查逻辑表达式，并计算表达式中的值，结束后指针指向[“,”, “.”]</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>bool 这个逻辑表达式返回的布尔值</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="base_statement.strExpression">
+<span class="sig-prename descclassname"><span class="pre">base_statement.</span></span><span class="sig-name descname"><span class="pre">strExpression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#base_statement.strExpression" title="Link to this definition">¶</a></dt>
+<dd><p>检查字符串表达式，并计算字符串表达式中的值，结束后指针指向[“,”, “.”]</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>string 字符串表达式返回字符串的值</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">之乎者也</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Euler_lne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/base_statement.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

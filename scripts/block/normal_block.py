@@ -27,6 +27,8 @@ def normalBlock(len_num):
         return compileInput(len_num)
     elif type == "find":
         return compileFind(len_num)
+    elif type == "connect":
+        return compileConnect(len_num)
     else:
         tokens = tool.tokenToList(".")  # 只将逗号之前的划分为一个列表
         if "=" in tokens:  # 第一种赋值语句
@@ -100,6 +102,7 @@ def declareVar(len_num):
                 return errorExpect("an expression", len_num)
         elif char == ",":  # 向前移动指针防止死循环
             index, char = tool.forwordIndex(index)
+    const.start_index = index
     return enums.OK
 
 
@@ -118,7 +121,7 @@ def compilePrint(len_num):
         return errorExpect(":", len_num)
     const.start_index, char = tool.forwordIndex(const.start_index)
     string = base.strExpression(len_num)
-    if string:
+    if string is not None:
         print(string)
     else:
         return enums.ERROR
@@ -177,7 +180,7 @@ def compileFind(len_num):
         return errorExpect(":", len_num)
     const.start_index, char = tool.forwordIndex(const.start_index)
     string = base.strExpression(len_num)
-    if string:
+    if string is not None:
         result = tool.findData(string)
         print("----------------------")
         if result is None:
@@ -191,3 +194,26 @@ def compileFind(len_num):
     else:
         return enums.ERROR
     return enums.OK
+
+
+def compileConnect(len_num):
+    """执行连接客服函数，返回后的指针指向.
+
+    Args:
+        len_num (integer): 现在读取到哪一行，用于进行报错处理
+
+    Returns:
+        * None 代表检测到错误
+        * 1 代表语句执行成功。
+    """
+    const.start_index, char = tool.forwordIndex(const.start_index)
+    if char != ":":
+        return errorExpect(":", len_num)
+    const.start_index, char = tool.forwordIndex(const.start_index)
+    string = base.strExpression(len_num)
+    if string is not None:
+        tool.connectTestPile(string)
+    else:
+        return enums.ERROR
+    return enums.OK
+

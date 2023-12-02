@@ -1,0 +1,7 @@
+switch\_block module
+====================
+
+.. automodule:: switch_block
+   :members:
+   :undoc-members:
+   :show-inheritance:

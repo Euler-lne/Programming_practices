@@ -1,0 +1,2 @@
+utf-8
+D:\Work\Program\Course\Programming practices\Final work\data\2.txt

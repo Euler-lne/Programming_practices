@@ -1,6 +1,7 @@
 from tools import enums
 from tools.error import *
 from tools import const
+import os
 
 
 class Read:
@@ -23,7 +24,18 @@ class Read:
         self.string = ""  # 用于保存字符串
         self.len_num = 1  # 用于记录当前有几行
         self.senten_state = enums.NONE  # 记录语句状态
-        self.file = open(self.path, "r", encoding=self.encodeing)
+        import os
+
+        try:
+            # 尝试判断文件是否存在
+            if os.path.exists(self.path):
+                self.file = open(self.path, "r", encoding=self.encodeing)
+            else:
+                print(f"文件 '{self.path}' 不存在。")
+                return enums.ERROR
+
+        except Exception as e:
+            print("发生其他异常:", e)
 
     def readBlock(self):
         """读取文件，边读边生成Token，保存到const.token中。
@@ -180,6 +192,9 @@ class Read:
         elif char == "寻":
             const.token.addToken("find", char)
             self.checkID()
+        elif char == "信":
+            const.token.addToken("connect", char)
+            self.checkID()
         elif char == "阴":
             const.token.addToken("false", char)
             self.checkID()
@@ -260,7 +275,7 @@ class Read:
                 return enums.ERROR
         return enums.OK
 
-    def saveToken(self, path="./log/token", encoding="utf-8", col=5):
+    def saveToken(self, path="../log/token", encoding="utf-8", col=5):
         """将Token 保存到指定路径，指定编码，指定列数
 
         Args:
@@ -268,11 +283,22 @@ class Read:
             encoding (str, optional): 中文编码. Defaults to "utf-8".
             col (int, optional): 行数. Defaults to 5.
         """
+        try:
+            # 尝试判断文件是否存在
+            if os.path.exists(path):
+                self.file = open(path, "r", encoding=self.encodeing)
+            else:
+                print(f"文件 '{path}' 不存在。")
+                return
+        except Exception as e:
+            print("发生其他异常:", e)
         if const.token.getLen() == 0:
             print("Token is empety!")
         else:
             if ".txt" not in path:
-                path = path + str(self.path).split("/")[-1]
+                _, filename = os.path.split(self.path)
+                path = path + filename
+
             with open(path, mode="w", encoding=encoding) as f:
                 j = 0
                 for i in const.token.token:

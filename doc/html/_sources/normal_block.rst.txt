@@ -1,0 +1,7 @@
+normal\_block module
+====================
+
+.. automodule:: normal_block
+   :members:
+   :undoc-members:
+   :show-inheritance:

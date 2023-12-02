@@ -1,0 +1,7 @@
+calculate\_expression module
+============================
+
+.. automodule:: calculate_expression
+   :members:
+   :undoc-members:
+   :show-inheritance:

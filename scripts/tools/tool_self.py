@@ -145,3 +145,25 @@ def findData(id):
     if len(result) > 1:
         return result
     return None
+
+
+def connectTestPile(_):
+    """连接函数的测试桩
+
+    Args:
+        _ (string): 用于接收连接对象的参数，但是对于测试桩来说不重要
+    """
+    string = input("请问你有什么问题吗？\n")
+    while string.find("结束") == -1 and string.find("挂断") == -1:
+        if string.find("投诉") != -1:
+            string = input("请说出你的问题，我们会改进的^_^\n")
+            string = input("以收到你的回复，请问还有什么问题吗？\n")
+        elif string.find("点评") != -1:
+            string = input("请说出你的评价，我们仔细聆听的^_^\n")
+            string = input("以收到你的回复，请问还有什么问题吗？\n")
+        elif string.find("点评") != -1:
+            string = input("请说出你的评价，我们仔细聆听的^_^\n")
+            string = input("以收到你的回复，请问还有什么问题吗？\n")
+        else:
+            string = input("很抱歉我们没有听清楚，请重新说。输入结束或者挂断结束对话。\n")
+    print("感谢您的来电，祝您生活愉快^_^")

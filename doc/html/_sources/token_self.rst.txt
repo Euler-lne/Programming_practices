@@ -1,0 +1,7 @@
+token\_self module
+==================
+
+.. automodule:: token_self
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,7 @@
+tool\_self module
+=================
+
+.. automodule:: tool_self
+   :members:
+   :undoc-members:
+   :show-inheritance:

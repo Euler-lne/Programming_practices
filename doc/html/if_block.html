@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>if_block module &#8212; 之乎者也 1.0 文档</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b3523f8e" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=039e1c02" />
+    <script src="_static/documentation_options.js?v=f115507d"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/translations.js?v=beaddf03"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-if_block">
+<span id="if-block-module"></span><h1>if_block module<a class="headerlink" href="#module-if_block" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="if_block.checkIfBlockEnd">
+<span class="sig-prename descclassname"><span class="pre">if_block.</span></span><span class="sig-name descname"><span class="pre">checkIfBlockEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#if_block.checkIfBlockEnd" title="Link to this definition">¶</a></dt>
+<dd><p>判断IF语句后续是否完整，检测终end!/end;，返回后的指针不变。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p></li>
+<li><p><strong>mid</strong> (<em>integer</em>) – if 语句块中else的位置，指向else，没有则mid == mid</p></li>
+<li><p><strong>end</strong> (<em>integer</em>) – if 语句块终止的位置的下一位。IF语句块结束后，下一个语句的起始位置。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>1 代表没有错误，IF语句块完整</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="if_block.checkIfBlockFront">
+<span class="sig-prename descclassname"><span class="pre">if_block.</span></span><span class="sig-name descname"><span class="pre">checkIfBlockFront</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#if_block.checkIfBlockFront" title="Link to this definition">¶</a></dt>
+<dd><p>检查if语句的前半部分，也就是 若……，则……返回后的指针指向then(则)的后一位</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>bool 代表if后面逻辑的值</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="if_block.divideIfBlock">
+<span class="sig-prename descclassname"><span class="pre">if_block.</span></span><span class="sig-name descname"><span class="pre">divideIfBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#if_block.divideIfBlock" title="Link to this definition">¶</a></dt>
+<dd><p>将if 块划分为两块，或者一块，也就是寻找转跳下标。</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>len_num</strong> (<em>integer</em>) – 现在读取到哪一行，用于进行报错处理</p></li>
+<li><p><strong>end</strong> (<em>integer</em>) – if 语句块终止的位置的下一位。IF语句块结束后，下一个语句的起始位置。</p></li>
+</ul>
+</dd>
+<dt class="field-even">返回<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>None 代表检测到错误</p></li>
+<li><p>(integer, integer) 第一位代表else的位置，第二位代表IF语句块结束后，下一个语句的起始位置。</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">之乎者也</a></h1>
+
+
+
+
+
+
+
+
+<h3>导航</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">快速搜索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="提交" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Euler_lne.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/if_block.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
